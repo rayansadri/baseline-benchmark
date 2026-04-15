@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance Interview — Coverage Gaps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #ffffff;
+      --text:        #111111;
+      --text-mid:    #555555;
+      --text-dim:    #999999;
+      --border:      #e0e0e0;
+      --border-dark: #bbbbbb;
+      --row-alt:     #fafafa;
+      --col3-bg:     #f7f7f7;
+      --col4-bg:     #111111;
+      --col4-text:   #ffffff;
+      --col4-dim:    #888888;
+      --pill-bg:     #111111;
+      --pill-text:   #ffffff;
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      color: var(--text);
+    }
+
+    /* ── Page wrapper ───────────────────── */
+    .page {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 64px 48px 80px;
+    }
+
+    /* ── Header ─────────────────────────── */
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+
+    .heading {
+      font-size: 30px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 48px;
+    }
+
+    .heading em {
+      font-style: normal;
+      color: var(--text-mid);
+      font-weight: 300;
+    }
+
+    /* ── Table ───────────────────────────── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+    }
+
+    /* ── Column headers ──────────────────── */
+    thead th {
+      padding: 12px 20px 12px;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--text);
+      text-align: left;
+    }
+
+    th.h1 { width: 15%; color: var(--text-dim); }
+    th.h2 { width: 22%; color: var(--text-mid); }
+    th.h3 { width: 28%; color: var(--text-mid); background: var(--col3-bg); }
+    th.h4 { width: 35%; color: #ffffff; background: var(--col4-bg); }
+
+    /* ── Body rows ───────────────────────── */
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:last-child td { border-bottom: none; }
+
+    tbody td {
+      padding: 20px 20px;
+      vertical-align: top;
+      font-size: 13.5px;
+      line-height: 1.6;
+    }
+
+    td.c1 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: -0.01em;
+      line-height: 1.4;
+    }
+
+    td.c2 {
+      color: var(--text-mid);
+    }
+
+    td.c3 {
+      background: var(--col3-bg);
+      color: var(--text-mid);
+    }
+
+    td.c4 {
+      background: var(--col4-bg);
+      color: var(--col4-text);
+    }
+
+    /* micro-examples */
+    .eg {
+      display: block;
+      margin-top: 4px;
+      font-size: 12px;
+      font-style: italic;
+      color: var(--text-dim);
+      line-height: 1.45;
+    }
+
+    td.c4 .eg {
+      color: var(--col4-dim);
+    }
+
+    /* bullet lists */
+    .pts { list-style: none; padding: 0; }
+    .pts li {
+      display: flex;
+      align-items: baseline;
+      gap: 7px;
+      padding: 1px 0;
+      font-size: 13.5px;
+      line-height: 1.55;
+    }
+    .pts li::before {
+      content: '—';
+      font-size: 11px;
+      opacity: 0.3;
+      flex-shrink: 0;
+    }
+
+    td.c4 .pts li { color: var(--col4-text); }
+
+    /* ── Methods footer ──────────────────── */
+    tfoot td {
+      padding: 20px 20px;
+      border-top: 2px solid var(--text);
+    }
+
+    .methods-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .methods-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      background: var(--pill-bg);
+      color: var(--pill-text);
+      font-size: 11.5px;
+      font-weight: 500;
+      padding: 5px 14px;
+      border-radius: 100px;
+      white-space: nowrap;
+      letter-spacing: -0.01em;
+    }
+
+    /* ── Tagline ─────────────────────────── */
+    .tagline {
+      margin-top: 52px;
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--text);
+      line-height: 1.15;
+    }
+
+    .tagline .dim {
+      color: var(--text-dim);
+      font-weight: 300;
+    }
+
+    /* ── Divider ─────────────────────────── */
+    hr.divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 64px 0 52px;
+    }
+
+    /* ── Supporting materials ────────────── */
+    .support {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 48px 80px;
+    }
+
+    .sup-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 24px;
+    }
+
+    .sup-card {
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 24px;
+    }
+
+    .sup-card-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 14px;
+    }
+
+    .sup-card-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      letter-spacing: -0.02em;
+    }
+
+    .copy-line {
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .copy-line:last-child { border-bottom: none; }
+
+    .copy-main {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .copy-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 2px;
+      line-height: 1.4;
+    }
+
+    .hier-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 7px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .hier-row:last-child { border-bottom: none; }
+
+    .hier-num {
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+      width: 18px;
+      flex-shrink: 0;
+    }
+
+    .hier-label {
+      font-size: 12.5px;
+      color: var(--text-mid);
+      flex: 1;
+    }
+
+    .hier-size {
+      font-size: 11px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+
+    .founder-table { width: 100%; font-size: 12.5px; }
+    .founder-table td {
+      padding: 7px 0;
+      vertical-align: top;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dim);
+      line-height: 1.5;
+    }
+    .founder-table td:first-child {
+      width: 38%;
+      color: var(--text);
+      font-weight: 600;
+      padding-right: 12px;
+    }
+    .founder-table tr:last-child td { border-bottom: none; }
+
+    .founder-tagline {
+      margin-top: 16px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    /* ── Responsive ──────────────────────── */
+    @media (max-width: 860px) {
+      .page, .support { padding-left: 20px; padding-right: 20px; }
+      th.h3, td.c3 { display: none; }
+      .sup-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <div class="eyebrow">Finance Underwriting · Context Slide</div>
+  <h1 class="heading">
+    Why the current interview<br/>
+    <em>doesn't capture what we need</em>
+  </h1>
+
+  <table>
+    <thead>
+      <tr>
+        <th class="h1">What We Measure</th>
+        <th class="h2">Today's Method</th>
+        <th class="h3">Why It Stays Weak</th>
+        <th class="h4">What Works Better</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <tr>
+        <td class="c1">Program<br/>Understanding</td>
+        <td class="c2">
+          One generic question
+          <span class="eg">"Why do you want this program?"</span>
+        </td>
+        <td class="c3">
+          <ul class="pts">
+            <li>Easy to memorize a good answer</li>
+            <li>Sounds convincing with zero research</li>
+          </ul>
+        </td>
+        <td class="c4">
+          <ul class="pts">
+            <li>Adaptive follow-up</li>
+            <li>Situational prompt</li>
+          </ul>
+          <span class="eg">"What does your first 6 months look like?"</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="c1">Motivation</td>
+        <td class="c2">
+          Open-ended self-description
+          <span class="eg">"Tell me about yourself"</span>
+        </td>
+        <td class="c3">
+          <ul class="pts">
+            <li>Generic passion answers everywhere</li>
+            <li>No way to tell real from rehearsed</li>
+          </ul>
+        </td>
+        <td class="c4">
+          <ul class="pts">
+            <li>Behavioral probe</li>
+            <li>Forced specificity</li>
+          </ul>
+          <span class="eg">"Give me one real moment that led you here"</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="c1">Work Quality</td>
+        <td class="c2">
+          Resume + short explanation
+          <span class="eg">Dates, titles, company names</span>
+        </td>
+        <td class="c3">
+          <ul class="pts">
+            <li>Task lists hide actual output</li>
+            <li>Part-time looks like full-time</li>
+            <li>Volunteer passes as paid experience</li>
+          </ul>
+        </td>
+        <td class="c4">
+          <ul class="pts">
+            <li>Ask about a specific challenge handled</li>
+            <li>Confirm paid vs. volunteer</li>
+            <li>Ask hours per week directly</li>
+          </ul>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="c1">Financial Strength</td>
+        <td class="c2">
+          Questionnaire + one explanation
+          <span class="eg">Self-reported figures</span>
+        </td>
+        <td class="c3">
+          <ul class="pts">
+            <li>Vague answers accepted</li>
+            <li>"Family will help" hides real debt</li>
+            <li>Gift vs. loan left unclassified</li>
+          </ul>
+        </td>
+        <td class="c4">
+          <ul class="pts">
+            <li>Contradiction checks</li>
+            <li>Clarify gift vs. loan live</li>
+            <li>Canadian vs. back-home asset split</li>
+          </ul>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="c1">Repayment Realism</td>
+        <td class="c2">
+          One question on monthly plan
+          <span class="eg">"How will you pay each month?"</span>
+        </td>
+        <td class="c3">
+          <ul class="pts">
+            <li>"I'll work part-time" accepted as a plan</li>
+            <li>No math. No stress test.</li>
+          </ul>
+        </td>
+        <td class="c4">
+          <ul class="pts">
+            <li>Scenario test</li>
+          </ul>
+          <span class="eg">"What if your job stops?" · "What if you have to move?"</span>
+        </td>
+      </tr>
+
+      <tr>
+        <td class="c1">Consistency &amp;<br/>Truthfulness</td>
+        <td class="c2">
+          Officer compares answers manually
+          <span class="eg">After the interview ends</span>
+        </td>
+        <td class="c3">
+          <ul class="pts">
+            <li>Contradictions get missed</li>
+            <li>No live cross-check</li>
+            <li>Weak real-time signal</li>
+          </ul>
+        </td>
+        <td class="c4">
+          <ul class="pts">
+            <li>Repeat key facts in different ways</li>
+            <li>Adaptive contradiction prompts</li>
+            <li>Force clarification while still live</li>
+          </ul>
+        </td>
+      </tr>
+
+    </tbody>
+
+    <tfoot>
+      <tr>
+        <td colspan="4">
+          <div class="methods-label">Methods that fit this problem</div>
+          <div class="methods-pills">
+            <span class="pill">Adaptive audio</span>
+            <span class="pill">Situational judgment</span>
+            <span class="pill">Behavioral probes</span>
+            <span class="pill">Forced specificity</span>
+            <span class="pill">Contradiction checks</span>
+            <span class="pill">Scenario stress tests</span>
+            <span class="pill">Rubric-based scoring</span>
+          </div>
+        </td>
+      </tr>
+    </tfoot>
+  </table>
+
+  <div class="tagline">
+    Same outputs.<br/><span class="dim">Better inputs.</span>
+  </div>
+
+</div>
+
+<hr class="divider" />
+
+<div class="support">
+  <div class="sup-grid">
+
+    <div class="sup-card">
+      <div class="sup-card-label">Deliverable 1</div>
+      <div class="sup-card-title">Exact Slide Copy</div>
+      <div class="copy-line">
+        <div class="copy-main">Eyebrow</div>
+        <div class="copy-sub">Finance Underwriting · Context Slide</div>
+      </div>
+      <div class="copy-line">
+        <div class="copy-main">Headline</div>
+        <div class="copy-sub">Why the current interview doesn't capture what we need</div>
+      </div>
+      <div class="copy-line">
+        <div class="copy-main">Col headers</div>
+        <div class="copy-sub">What We Measure · Today's Method · Why It Stays Weak · What Works Better</div>
+      </div>
+      <div class="copy-line">
+        <div class="copy-main">Methods label</div>
+        <div class="copy-sub">Methods that fit this problem</div>
+      </div>
+      <div class="copy-line">
+        <div class="copy-main">Tagline</div>
+        <div class="copy-sub">Same outputs. Better inputs.</div>
+      </div>
+    </div>
+
+    <div class="sup-card">
+      <div class="sup-card-label">Deliverable 2</div>
+      <div class="sup-card-title">Ideal Visual Hierarchy</div>
+      <div class="hier-row">
+        <span class="hier-num">1</span>
+        <span class="hier-label">Tagline — anchor the takeaway first</span>
+        <span class="hier-size">36px bold</span>
+      </div>
+      <div class="hier-row">
+        <span class="hier-num">2</span>
+        <span class="hier-label">Column 4 header — black signals action</span>
+        <span class="hier-size">10px caps</span>
+      </div>
+      <div class="hier-row">
+        <span class="hier-num">3</span>
+        <span class="hier-label">Column 1 — scan subjects down the left</span>
+        <span class="hier-size">14px bold</span>
+      </div>
+      <div class="hier-row">
+        <span class="hier-num">4</span>
+        <span class="hier-label">Methods pills — closing visual punch</span>
+        <span class="hier-size">pill row</span>
+      </div>
+      <div class="hier-row">
+        <span class="hier-num">5</span>
+        <span class="hier-label">Micro-examples — confirm without reading</span>
+        <span class="hier-size">12px italic</span>
+      </div>
+    </div>
+
+    <div class="sup-card">
+      <div class="sup-card-label">Deliverable 3</div>
+      <div class="sup-card-title">Punchier Founder Tone</div>
+      <table class="founder-table">
+        <tr>
+          <td>Headline</td>
+          <td>The interview was built to collect data. Not to find truth.</td>
+        </tr>
+        <tr>
+          <td>Col 3 header</td>
+          <td>The gap</td>
+        </tr>
+        <tr>
+          <td>Col 4 header</td>
+          <td>What we do instead</td>
+        </tr>
+        <tr>
+          <td>Methods label</td>
+          <td>The toolkit</td>
+        </tr>
+        <tr>
+          <td>Tagline</td>
+          <td>The output doesn't change. The signal does.</td>
+        </tr>
+        <tr>
+          <td>Alt tagline</td>
+          <td>We don't ask more. We ask smarter.</td>
+        </tr>
+      </table>
+      <div class="founder-tagline">We don't ask more.<br/>We ask smarter.</div>
+    </div>
+
+  </div>
+</div>
+
+</body>
+</html>

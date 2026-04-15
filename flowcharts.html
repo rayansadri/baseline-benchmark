@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Visual Flowcharts — Finance Baseline</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, Arial, Helvetica, sans-serif;
+      font-size: 14px;
+      color: #202122;
+      background: #fff;
+    }
+
+    .page-header {
+      padding: 20px 32px 14px;
+      border-bottom: 1px solid #a2a9b1;
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .page-title {
+      font-family: Georgia, serif;
+      font-size: 22px;
+      font-weight: normal;
+    }
+
+    .page-meta { font-size: 12px; color: #54595d; margin-left: auto; }
+
+    .nav-links { display: flex; gap: 14px; }
+    .nav-link { font-size: 12px; color: #3366cc; text-decoration: none; }
+    .nav-link:hover { text-decoration: underline; }
+
+    .container { max-width: 1280px; margin: 0 auto; padding: 0 32px 80px; }
+
+    .diagram-section { margin-top: 36px; }
+
+    .section-label {
+      font-size: 10px; font-weight: bold; text-transform: uppercase;
+      letter-spacing: 0.1em; color: #54595d; margin-bottom: 4px;
+    }
+
+    .section-title {
+      font-family: Georgia, serif;
+      font-size: 19px;
+      font-weight: normal;
+      border-bottom: 1px solid #a2a9b1;
+      padding-bottom: 3px;
+      margin-bottom: 12px;
+    }
+
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 11.5px;
+    }
+
+    .leg { display: flex; align-items: center; gap: 5px; }
+    .leg-sw { width: 13px; height: 13px; border: 1.5px solid; border-radius: 2px; flex-shrink: 0; }
+
+    .diagram-wrap {
+      border: 1px solid #c8ccd1;
+      background: #fafafa;
+      padding: 20px 16px;
+      overflow-x: auto;
+    }
+
+    .mermaid { min-width: 100%; display: flex; justify-content: center; }
+
+    hr { border: none; border-top: 1px solid #c8ccd1; margin: 36px 0; }
+
+    /* Summary table */
+    table { border-collapse: collapse; width: 100%; font-size: 12.5px; margin-top: 12px; }
+    th { background: #f8f9fa; border: 1px solid #a2a9b1; padding: 7px 10px; text-align: left; font-size: 11.5px; font-weight: bold; }
+    td { border: 1px solid #a2a9b1; padding: 7px 10px; vertical-align: top; line-height: 1.5; }
+    tr:nth-child(even) td { background: #f9fafb; }
+    .td-safe  { background: #dcfce7; color: #14532d; font-size: 12px; }
+    .td-lock  { background: #fee2e2; color: #7f1d1d; font-size: 12px; }
+    .td-bench { background: #fef3c7; color: #78350f; font-size: 12px; }
+    .td-out   { background: #bbf7d0; color: #14532d; font-weight: bold; font-size: 12px; }
+  </style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1 class="page-title">Visual Flowcharts — Program Fit &amp; Financial Resources</h1>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">← Full baseline</a>
+    <a class="nav-link" href="traits.html">← Traits detail</a>
+  </div>
+  <div class="page-meta">3 diagrams · current system only · no redesign</div>
+</div>
+
+<div class="container">
+
+  <div class="legend" style="margin-top:16px;">
+    <div class="leg"><div class="leg-sw" style="background:#dbeafe;border-color:#2563eb;"></div>Current Input</div>
+    <div class="leg"><div class="leg-sw" style="background:#dcfce7;border-color:#16a34a;"></div>Safe to Change</div>
+    <div class="leg"><div class="leg-sw" style="background:#fef3c7;border-color:#b45309;"></div>Benchmark / Locked Rule</div>
+    <div class="leg"><div class="leg-sw" style="background:#ede9fe;border-color:#7c3aed;"></div>Formula (Locked)</div>
+    <div class="leg"><div class="leg-sw" style="background:#fee2e2;border-color:#dc2626;"></div>Flag / Hard Stop</div>
+    <div class="leg"><div class="leg-sw" style="background:#bbf7d0;border-color:#15803d;"></div>Fixed Output (Do Not Change)</div>
+    <div class="leg"><div class="leg-sw" style="background:#f9fafb;border-color:#6b7280;"></div>Process / Check</div>
+  </div>
+
+  <!-- ═══════════════════ OUTPUT 1: PROGRAM FIT ═══════════════════ -->
+  <div class="diagram-section" id="pf">
+    <div class="section-label">Output 1</div>
+    <h2 class="section-title">Program Fit — Flowchart</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+graph TD
+    classDef input   fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef safe    fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef bench   fill:#fef3c7,stroke:#b45309,color:#78350f
+    classDef formula fill:#ede9fe,stroke:#7c3aed,color:#3b0764
+    classDef flag    fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+    classDef output  fill:#bbf7d0,stroke:#15803d,color:#14532d,font-weight:bold
+    classDef check   fill:#f9fafb,stroke:#6b7280,color:#111827
+
+    PF1["CURRENT INPUT\nResume"]:::input
+    PF2["CURRENT INPUT\nAcademic Transcript"]:::input
+    PF3["SAFE TO CHANGE\nInterview Transcript"]:::safe
+    PF4["SAFE TO CHANGE\nQuestionnaire"]:::safe
+    PF5["CURRENT INPUT\nProgram Details"]:::input
+    PF6["CURRENT INPUT\nProgram Fit Rubric\nexternal reference"]:::input
+
+    PF1 --> PFXV
+    PF2 --> PFXV
+    PF3 --> PFXV
+    PF4 --> PFXV
+
+    PFXV{"DO NOT CHANGE\nCross-verify:\nResume vs Interview\nQuestionnaire vs Interview"}:::bench
+
+    PFXV -->|unverifiable claim| PFF1["FLAG\nScore 0 on all sub-criteria\nfor that dimension"]:::flag
+    PFXV -->|volunteer work detected| PFF2["FLAG\nLower quality than paid\nExplicit note required"]:::flag
+    PFXV -->|discrepancy found| PFF3["FLAG\nNote side-by-side in report\nMay lower score"]:::flag
+    PFXV -->|verified — proceed| PFEF
+    PFXV -->|verified — proceed| PFIE
+
+    PF3 --> PFSOP
+    PF4 --> PFSOP
+
+    PFEF["Sub-dimension\nEducation Fit"]:::check
+    PFIE["Sub-dimension\nIndustry Experience"]:::check
+    PFSOP["Sub-dimension\nStatement of Purpose"]:::check
+
+    PFEF --> PFEFF["DO NOT CHANGE\nRelevance x 0.50\nDuration x 0.20\nDepth x 0.30"]:::formula
+    PFIE --> PFIEF["DO NOT CHANGE\nRelevance x 0.50\nDuration x 0.20\nDepth x 0.30"]:::formula
+    PFSOP --> PFSOPF["DO NOT CHANGE\nUnderstanding x 0.50\nMotivation x 0.50"]:::formula
+
+    PF5 --> PFRC
+    PF6 --> PFRC
+
+    PFRC{"Rubric available\nat runtime?"}:::check
+    PFRC -->|NO| PFNA["Score N/A\nAdd to document requests"]:::flag
+    PFRC -->|YES| PFRAPP["Apply program-specific criteria\nagainst applicant profile"]:::bench
+
+    PFF1   --> PFSYN
+    PFF2   --> PFSYN
+    PFF3   --> PFSYN
+    PFEFF  --> PFSYN
+    PFIEF  --> PFSYN
+    PFSOPF --> PFSYN
+    PFRAPP --> PFSYN
+
+    PFSYN["CURRENT BENCHMARK\nOfficer synthesizes all sub-scores and flags\nConservative stance: doubt resolves against applicant"]:::bench
+
+    PFSYN --> PFO1["FIXED OUTPUT — DO NOT CHANGE\nProgram Fit Score: 1 to 5 or N/A"]:::output
+    PFSYN --> PFO2["FIXED OUTPUT — DO NOT CHANGE\nProgram Fit Report:\nWritten justification referencing rubric"]:::output
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ═══════════════════ OUTPUT 2: FINANCIAL RESOURCES ═══════════════════ -->
+  <div class="diagram-section" id="fr">
+    <div class="section-label">Output 2</div>
+    <h2 class="section-title">Financial Resources — Flowchart</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+graph TD
+    classDef input   fill:#dbeafe,stroke:#2563eb,color:#1e3a8a
+    classDef safe    fill:#dcfce7,stroke:#16a34a,color:#14532d
+    classDef bench   fill:#fef3c7,stroke:#b45309,color:#78350f
+    classDef formula fill:#ede9fe,stroke:#7c3aed,color:#3b0764
+    classDef flag    fill:#fee2e2,stroke:#dc2626,color:#7f1d1d
+    classDef output  fill:#bbf7d0,stroke:#15803d,color:#14532d,font-weight:bold
+    classDef check   fill:#f9fafb,stroke:#6b7280,color:#111827
+    classDef pos     fill:#f0fdf4,stroke:#86efac,color:#14532d
+
+    FR1["SAFE TO CHANGE\nQuestionnaire\nassets, debt, collateral plan"]:::safe
+    FR2["SAFE TO CHANGE\nInterview Transcript"]:::safe
+    FR3["CURRENT INPUT\nUser Documents\nbank statements"]:::input
+    FR4["CURRENT INPUT — ONSHORE ONLY\nCanadian Credit Report"]:::input
+
+    FR1 --> FRBR
+    FR2 --> FRBR
+
+    FRBR{"DO NOT CHANGE\napplicationTags\ncontains onshore-auto?"}:::bench
+
+    FRBR -->|YES| FRON["Onshore path\nCA assets prioritized\nCredit report active\nIncome statement required"]:::bench
+    FRBR -->|NO| FRST["Standard path\nQuestionnaire and interview only\nNo Canadian financial data"]:::check
+
+    FRON --> FRAXV
+    FRST --> FRAXV
+
+    FRAXV{"Cross-verify assets\nQuestionnaire vs Interview"}:::bench
+
+    FRAXV -->|gap over CAD 5000| FRAF["FLAG\nSignificant asset discrepancy\nNote side-by-side in report"]:::flag
+    FRAXV -->|gap under CAD 5000| FRALP["Low priority\nProceed"]:::check
+    FRAXV --> FRACAT
+
+    FRACAT["Categorize by location and liquidity"]:::check
+
+    FRACAT --> FRACA["DO NOT CHANGE\nCA assets — higher weight\nSavings greater than Car greater than GICs"]:::bench
+    FRACAT --> FRABH["Back-home assets — lower weight\nSavings, Car, Land, House, Other"]:::check
+
+    FRAXV --> FRCXV
+
+    FRCXV{"Cross-verify collateral source\nQuestionnaire vs Interview"}:::bench
+
+    FRCXV -->|mismatch| FRCF["FLAG — HIGH PRIORITY\nCollateral source discrepancy"]:::flag
+    FRCXV --> FRCTYPE{"Source type?"}:::check
+
+    FRCTYPE -->|Gift| FRCGI["Positive signal\nAdd gift amount to Total Assets"]:::pos
+    FRCTYPE -->|Loan| FRCLO["Risk signal\nAdd loan amount to Total Debt"]:::flag
+    FRCTYPE -->|Asset sale| FRCSA["Neutral\nNo net change"]:::check
+
+    FRCXV --> FRDXV
+    FR4 -.->|onshore only| FRDXV
+
+    FRDXV{"Cross-verify debt\nQuestionnaire vs Interview\nvs Credit Report if onshore"}:::bench
+
+    FRDXV -->|any mismatch| FRDF["FLAG — HIGHEST PRIORITY\nDebt mismatch\nMust escalate"]:::flag
+    FRDXV --> FRDEV["Evaluate debt structure\nLender type, amount,\nmonthly payment, duration"]:::check
+
+    FRON --> FRINC
+    FR3 -.->|bank docs| FRINC
+
+    FRINC["ONSHORE ONLY\nIncome statement\nmonthly income vs expenses"]:::check
+
+    FRINC -->|income over CAD 1000/mo| FRIG["Serious income — positive signal"]:::pos
+    FRINC -->|job city differs from school| FRIREL["FLAG\nRelocation risk\nIncome buffer gone at school start"]:::flag
+    FRINC -->|income below expenses| FRIDEF["FLAG\nCash flow deficit"]:::flag
+
+    FRACA  --> FRSYN
+    FRABH  --> FRSYN
+    FRCGI  --> FRSYN
+    FRCLO  --> FRSYN
+    FRCSA  --> FRSYN
+    FRDEV  --> FRSYN
+    FRIG   --> FRSYN
+    FRAF   --> FRSYN
+    FRCF   --> FRSYN
+    FRDF   --> FRSYN
+    FRIREL --> FRSYN
+    FRIDEF --> FRSYN
+
+    FRSYN["CURRENT BENCHMARK\nFull financial picture synthesis\nTotal assets vs total debt + collateral adjustment\nIncome buffer if onshore\nConservative officer judgment"]:::bench
+
+    FRSYN --> FRO1["FIXED OUTPUT — DO NOT CHANGE\nFinancial Resources Score: 1 to 5"]:::output
+    FRSYN --> FRO2["FIXED OUTPUT — DO NOT CHANGE\nFinancial Resources Report\nAssets, debt, collateral, flags, rationale"]:::output
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ═══════════════════ OUTPUT 3: MIND MAP ═══════════════════ -->
+  <div class="diagram-section" id="mm">
+    <div class="section-label">Output 3</div>
+    <h2 class="section-title">Mind Map — Inputs, Benchmark, Fixed Outputs, Intervention Points</h2>
+    <div class="diagram-wrap">
+      <div class="mermaid">
+mindmap
+  root((Current Finance Baseline))
+    Program Fit
+      Inputs
+        Resume
+        Academic Transcript
+        Interview Transcript
+        Questionnaire
+        Program Details
+        Program Fit Rubric
+      Sub-Dimensions
+        Education Fit
+          Relevance 50pct
+          Duration 20pct
+          Depth 30pct
+        Industry Experience
+          Relevance 50pct
+          Duration 20pct
+          Depth 30pct
+        Statement of Purpose
+          Understanding 50pct
+          Motivation 50pct
+      Integrity Rules
+        Unverifiable equals Score 0
+        Volunteer work flagged
+        Discrepancy flagged in report
+    Financial Resources
+      Inputs
+        Questionnaire
+        Interview Transcript
+        User Documents
+        Credit Report onshore only
+      Pillars
+        Assets
+          CA assets higher weight
+          Liquidity order locked
+        Cash Collateral
+          Gift adds to assets
+          Loan adds to debt
+          Sale is neutral
+        Debt
+          Mismatch is highest priority flag
+          Soft vs hard lender type
+        Income onshore only
+          Over 1k per month threshold
+          Relocation risk check
+    Benchmark
+      Conservative officer judgment
+      Cross-verify all figures
+      Doubt resolves against applicant
+      Liquidity hierarchy locked
+      Collateral classification rules locked
+      Debt mismatch is highest priority
+    Fixed Outputs
+      DO NOT CHANGE
+        Program Fit Score 1 to 5
+        Program Fit Report
+        Financial Resources Score 1 to 5
+        Financial Resources Report
+        All weighting formulas
+        All flag and escalation rules
+        Output schema
+    Adaptive Audio Touchpoints
+      SAFE TO CHANGE
+        Collateral source clarification
+          Was it a gift or a loan
+          Will you pay it back
+        Debt disclosure probing
+          Any credit cards or loans outstanding
+          Contradiction surface in real time
+        Canadian vs back home split
+          How much is in a Canadian bank account
+        Part time vs full time hours
+          Hours per week in that role
+        Realistic understanding probes
+          Expected job title after graduation
+          What does the program actually cover
+        Motivation depth questions
+          Why this specific program not another
+        Income continuity check
+          Will you keep your job after school starts
+          Job city vs school city
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ═══════════════════ SUMMARY TABLE ═══════════════════ -->
+  <div class="diagram-section" id="table">
+    <div class="section-label">Summary</div>
+    <h2 class="section-title">Benchmark · Fixed Output · Safe to Change · Do Not Change</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th width="14%">Flow</th>
+          <th width="20%">Benchmark</th>
+          <th width="18%">Fixed Output</th>
+          <th width="24%">Safe to Change</th>
+          <th width="24%">Do Not Change</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Program Fit</strong></td>
+          <td class="td-bench">Program rubric + conservative officer judgment across all sub-scores</td>
+          <td class="td-out">Score 1–5 + written report</td>
+          <td class="td-safe">How interview questions are asked. Depth and follow-up cadence on motivation, hours, course content.</td>
+          <td class="td-lock">All three weighted formulas. Unverifiable = 0 rule. Volunteer flag rule. Output schema.</td>
+        </tr>
+        <tr>
+          <td><strong>Education Fit</strong></td>
+          <td class="td-bench">Relevance 50% · Duration 20% · Depth 30%</td>
+          <td class="td-out">Sub-score feeds Program Fit report</td>
+          <td class="td-safe">Questions that extract course-level knowledge depth, completion status, and field specificity.</td>
+          <td class="td-lock">Formula weights. Unverifiable = 0 rule.</td>
+        </tr>
+        <tr>
+          <td><strong>Industry Experience</strong></td>
+          <td class="td-bench">Relevance 50% · Duration 20% · Depth 30%</td>
+          <td class="td-out">Sub-score feeds Program Fit report</td>
+          <td class="td-safe">Questions that confirm part-time vs. full-time hours. Paid vs. volunteer detection. Specific task probes.</td>
+          <td class="td-lock">Formula weights. Duration part-time adjustment rule. Volunteer = lower quality rule.</td>
+        </tr>
+        <tr>
+          <td><strong>Statement of Purpose</strong></td>
+          <td class="td-bench">Understanding 50% · Motivation 50%</td>
+          <td class="td-out">Sub-score feeds Program Fit report</td>
+          <td class="td-safe">Follow-ups on expected outcomes. Probes for specific reasons, not generic answers. Program knowledge check.</td>
+          <td class="td-lock">50/50 weighting. Output schema.</td>
+        </tr>
+        <tr>
+          <td><strong>FR — Assets</strong></td>
+          <td class="td-bench">CA assets &gt; back-home. Liquidity: Savings &gt; Car &gt; Land &gt; House &gt; Other. CAD 5,000 flag threshold.</td>
+          <td class="td-out">Feeds FR score + report</td>
+          <td class="td-safe">Question that explicitly splits CA vs. back-home savings. Asset verification follow-ups.</td>
+          <td class="td-lock">Liquidity hierarchy. CAD 5,000 discrepancy threshold. CA weighting rule.</td>
+        </tr>
+        <tr>
+          <td><strong>FR — Collateral</strong></td>
+          <td class="td-bench">Gift = asset. Loan = debt. Sale = neutral. Mismatch = high-priority flag.</td>
+          <td class="td-out">Adjusts Total Assets or Total Debt calculation in report</td>
+          <td class="td-safe">Follow-up when answer is vague: "Will you pay that back?" Gift origin verification probe.</td>
+          <td class="td-lock">Classification rules. Mismatch = high-priority flag rule.</td>
+        </tr>
+        <tr>
+          <td><strong>FR — Debt</strong></td>
+          <td class="td-bench">Cross-verify questionnaire vs. interview vs. credit report. Any mismatch = highest priority flag.</td>
+          <td class="td-out">Feeds FR score + report</td>
+          <td class="td-safe">Structured probes for credit cards, informal loans, family loans. Real-time contradiction check.</td>
+          <td class="td-lock">Mismatch = highest priority rule. Debt structure evaluation schema.</td>
+        </tr>
+        <tr>
+          <td><strong>FR — Income (Onshore)</strong></td>
+          <td class="td-bench">CAD 1,000/mo threshold. Relocation = income risk. Cash flow: income vs. expenses.</td>
+          <td class="td-out">Feeds FR score + report (onshore only)</td>
+          <td class="td-safe">Explicit city comparison question. Job continuity plan. Contingency if income is lost.</td>
+          <td class="td-lock">CAD 1,000/mo threshold. Relocation risk rule. Onshore-only scope.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    flowchart: {
+      useMaxWidth: true,
+      htmlLabels: true,
+      curve: 'basis',
+      rankSpacing: 60,
+      nodeSpacing: 40
+    },
+    mindmap: {
+      useMaxWidth: true,
+      padding: 16
+    },
+    securityLevel: 'loose'
+  });
+</script>
+
+</body>
+</html>

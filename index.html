@@ -1,0 +1,1546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance Underwriting Baseline — Internal Reference</title>
+  <style>
+    /* ── Reset ───────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Tokens ──────────────────────────────────────────── */
+    :root {
+      --text:        #202122;
+      --text-light:  #54595d;
+      --link:        #3366cc;
+      --link-visit:  #6b4ba1;
+      --border:      #a2a9b1;
+      --border-light:#c8ccd1;
+      --bg:          #ffffff;
+      --bg-soft:     #f8f9fa;
+      --bg-warn:     #fef9e7;
+      --bg-note:     #eaf3fb;
+      --bg-danger:   #fdf3f4;
+      --accent-warn: #e68a00;
+      --accent-note: #3366cc;
+      --accent-danger:#b32424;
+      --sidebar-w:   224px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, 'Linux Libertine', Georgia, Times, serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ── Layout ──────────────────────────────────────────── */
+    .page {
+      display: flex;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── Sidebar ─────────────────────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      padding: 20px 0 40px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      font-family: -apple-system, Arial, Helvetica, sans-serif;
+    }
+
+    .sidebar::-webkit-scrollbar { width: 3px; }
+    .sidebar::-webkit-scrollbar-thumb { background: var(--border-light); }
+
+    .toc-box {
+      border: 1px solid var(--border);
+      background: var(--bg-soft);
+      padding: 12px 14px;
+      font-size: 12.5px;
+    }
+
+    .toc-title {
+      font-size: 12.5px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .toc-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .toc-list li {
+      margin-bottom: 3px;
+      line-height: 1.45;
+    }
+
+    .toc-list a {
+      color: var(--link);
+      text-decoration: none;
+      font-size: 12.5px;
+    }
+
+    .toc-list a:hover { text-decoration: underline; }
+    .toc-list a.active { font-weight: bold; }
+
+    .toc-list .toc-num {
+      color: var(--text-light);
+      margin-right: 4px;
+      font-size: 11.5px;
+    }
+
+    .toc-group {
+      margin-top: 6px;
+      padding-top: 6px;
+      border-top: 1px solid var(--border-light);
+    }
+
+    .toc-group-label {
+      font-size: 10.5px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+
+    /* ── Main Content ────────────────────────────────────── */
+    .content {
+      flex: 1;
+      min-width: 0;
+      padding: 24px 32px 80px 32px;
+      border-left: 1px solid var(--border-light);
+    }
+
+    /* ── Page Title ──────────────────────────────────────── */
+    .page-title {
+      font-family: 'Linux Libertine', Georgia, Times, serif;
+      font-size: 28px;
+      font-weight: normal;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+      margin-bottom: 4px;
+      color: var(--text);
+      line-height: 1.3;
+    }
+
+    .page-subtitle {
+      font-size: 12.5px;
+      color: var(--text-light);
+      margin-bottom: 16px;
+      font-family: -apple-system, Arial, sans-serif;
+    }
+
+    .page-meta {
+      font-size: 12px;
+      color: var(--text-light);
+      font-family: -apple-system, Arial, sans-serif;
+      margin-bottom: 20px;
+    }
+
+    .page-meta span { margin-right: 14px; }
+
+    /* ── Sections ────────────────────────────────────────── */
+    .section {
+      margin-bottom: 28px;
+    }
+
+    .section-heading {
+      font-family: 'Linux Libertine', Georgia, Times, serif;
+      font-size: 22px;
+      font-weight: normal;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 3px;
+      margin-bottom: 12px;
+      margin-top: 28px;
+      color: var(--text);
+    }
+
+    .subsection-heading {
+      font-family: -apple-system, Arial, sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      margin-top: 18px;
+      color: var(--text);
+    }
+
+    .sub2-heading {
+      font-family: -apple-system, Arial, sans-serif;
+      font-size: 13.5px;
+      font-weight: bold;
+      margin-bottom: 6px;
+      margin-top: 14px;
+      color: var(--text);
+    }
+
+    /* ── Typography ──────────────────────────────────────── */
+    p {
+      margin-bottom: 10px;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text);
+    }
+
+    ul, ol {
+      padding-left: 24px;
+      margin-bottom: 10px;
+    }
+
+    li {
+      font-size: 14px;
+      line-height: 1.6;
+      margin-bottom: 3px;
+      color: var(--text);
+    }
+
+    a { color: var(--link); }
+    a:visited { color: var(--link-visit); }
+
+    strong { font-weight: bold; }
+
+    code {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 12.5px;
+      background: var(--bg-soft);
+      border: 1px solid var(--border-light);
+      padding: 0 3px;
+      border-radius: 2px;
+    }
+
+    /* ── Tables ──────────────────────────────────────────── */
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      margin: 12px 0;
+      font-size: 13.5px;
+      font-family: -apple-system, Arial, sans-serif;
+    }
+
+    th {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      padding: 7px 10px;
+      text-align: left;
+      font-size: 12.5px;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    td {
+      border: 1px solid var(--border);
+      padding: 7px 10px;
+      vertical-align: top;
+      color: var(--text);
+      line-height: 1.5;
+    }
+
+    tr:nth-child(even) td { background: #f9fafb; }
+
+    .score-cell {
+      font-family: 'Courier New', monospace;
+      font-weight: bold;
+      text-align: center;
+      width: 40px;
+    }
+
+    .score-5 { background: #d4edda; color: #155724; }
+    .score-4 { background: #d1ece5; color: #0b4f3a; }
+    .score-3 { background: #fff3cd; color: #856404; }
+    .score-2 { background: #ffe5cc; color: #7c4008; }
+    .score-1 { background: #f8d7da; color: #721c24; }
+    .score-0 { background: var(--bg-soft); color: var(--text-light); }
+    .score-na { background: var(--bg-soft); color: var(--text-light); font-size: 11px; }
+
+    /* Placeholder row styling */
+    .row-placeholder td { background: var(--bg-soft); color: var(--text-light); }
+
+    /* ── Template Boxes (Wikipedia-style) ────────────────── */
+    .notice {
+      border: 1px solid;
+      padding: 10px 14px;
+      margin: 12px 0;
+      font-size: 13px;
+      font-family: -apple-system, Arial, sans-serif;
+      line-height: 1.55;
+    }
+
+    .notice-note {
+      background: var(--bg-note);
+      border-color: #36c;
+    }
+
+    .notice-warn {
+      background: var(--bg-warn);
+      border-color: var(--accent-warn);
+    }
+
+    .notice-danger {
+      background: var(--bg-danger);
+      border-color: var(--accent-danger);
+    }
+
+    .notice-label {
+      font-weight: bold;
+      margin-bottom: 3px;
+      display: block;
+    }
+
+    .notice-note .notice-label  { color: var(--accent-note); }
+    .notice-warn .notice-label  { color: var(--accent-warn); }
+    .notice-danger .notice-label { color: var(--accent-danger); }
+
+    /* ── Formula Block ───────────────────────────────────── */
+    .formula {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--border);
+      padding: 10px 14px;
+      margin: 10px 0;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── Branch Toggle ───────────────────────────────────── */
+    .branch-toggle {
+      display: flex;
+      gap: 0;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      width: fit-content;
+      font-family: -apple-system, Arial, sans-serif;
+    }
+
+    .branch-btn {
+      padding: 5px 14px;
+      font-size: 12.5px;
+      cursor: pointer;
+      background: var(--bg-soft);
+      color: var(--text-light);
+      border: none;
+      border-right: 1px solid var(--border);
+      font-family: inherit;
+    }
+
+    .branch-btn:last-child { border-right: none; }
+
+    .branch-btn.on {
+      background: var(--bg);
+      color: var(--text);
+      font-weight: bold;
+    }
+
+    .branch-panel { display: none; }
+    .branch-panel.on { display: block; }
+
+    /* ── Decision chips ──────────────────────────────────── */
+    .chips { display: flex; gap: 8px; flex-wrap: wrap; margin: 8px 0; }
+
+    .chip {
+      display: inline-block;
+      padding: 3px 12px;
+      border: 1px solid;
+      border-radius: 2px;
+      font-family: -apple-system, Arial, sans-serif;
+      font-size: 12.5px;
+      font-weight: bold;
+    }
+
+    .chip-approve { background: #d4edda; border-color: #6cb878; color: #155724; }
+    .chip-neutral { background: var(--bg-soft); border-color: var(--border); color: var(--text-light); }
+    .chip-reject  { background: #f8d7da; border-color: #e4969c; color: #721c24; }
+
+    /* ── Status dots ─────────────────────────────────────── */
+    .dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      margin-right: 5px;
+      vertical-align: middle;
+    }
+    .dot-active      { background: #2e7d32; }
+    .dot-conditional { background: #e68a00; }
+    .dot-placeholder { background: #aaa; }
+
+    /* ── Hardcut list ────────────────────────────────────── */
+    .hardcut-item {
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 13.5px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+    .hardcut-item:last-child { border-bottom: none; }
+    .hardcut-x { color: var(--accent-danger); font-weight: bold; flex-shrink: 0; }
+
+    /* ── Summary sub-block ───────────────────────────────── */
+    .sum-block {
+      border: 1px solid var(--border-light);
+      margin-bottom: 12px;
+    }
+
+    .sum-block-title {
+      background: var(--bg-soft);
+      border-bottom: 1px solid var(--border-light);
+      padding: 6px 10px;
+      font-weight: bold;
+      font-size: 13.5px;
+      font-family: -apple-system, Arial, sans-serif;
+    }
+
+    .sum-block-body {
+      padding: 8px 10px;
+    }
+
+    .factor-row {
+      display: flex;
+      gap: 8px;
+      padding: 4px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 13px;
+      font-family: -apple-system, Arial, sans-serif;
+    }
+
+    .factor-row:last-child { border-bottom: none; }
+
+    .factor-n {
+      color: var(--text-light);
+      font-size: 11.5px;
+      font-family: 'Courier New', monospace;
+      width: 20px;
+      flex-shrink: 0;
+      padding-top: 1px;
+    }
+
+    /* ── Inline muted note ───────────────────────────────── */
+    .muted {
+      font-size: 12.5px;
+      color: var(--text-light);
+      font-style: italic;
+      font-family: -apple-system, Arial, sans-serif;
+    }
+
+    /* ── Two column ──────────────────────────────────────── */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 10px 0;
+    }
+
+    .col-box {
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      background: var(--bg-soft);
+      font-size: 13px;
+      font-family: -apple-system, Arial, sans-serif;
+    }
+
+    .col-box-title {
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 12.5px;
+    }
+
+    /* ── Responsive ──────────────────────────────────────── */
+    @media (max-width: 800px) {
+      .page { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: static; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+      .content { border-left: none; padding: 16px; }
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ── Sidebar ─────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <nav class="toc-box">
+      <div class="toc-title">Contents</div>
+      <ul class="toc-list">
+        <li><a href="#overview"><span class="toc-num">1</span>Overview</a></li>
+        <li><a href="#inputs"><span class="toc-num">2</span>Inputs</a></li>
+        <li><a href="#outputs"><span class="toc-num">3</span>Core Outputs</a></li>
+        <li><a href="#scored-categories"><span class="toc-num">4</span>Scored Categories</a></li>
+      </ul>
+
+      <div class="toc-group">
+        <div class="toc-group-label">Rubrics</div>
+        <ul class="toc-list">
+          <li><a href="#program-fit"><span class="toc-num">5</span>Program Fit</a></li>
+          <li><a href="#job-readiness"><span class="toc-num">6</span>Job Readiness</a></li>
+          <li><a href="#industry-experience"><span class="toc-num">7</span>Industry Experience</a></li>
+          <li><a href="#education-fit"><span class="toc-num">8</span>Education Fit</a></li>
+          <li><a href="#financial-resources"><span class="toc-num">9</span>Financial Resources</a></li>
+          <li><a href="#network-support"><span class="toc-num">10</span>Network Support</a></li>
+          <li><a href="#school-grades"><span class="toc-num">11</span>School Grades</a></li>
+          <li><a href="#statement-of-purpose"><span class="toc-num">12</span>Statement of Purpose</a></li>
+        </ul>
+      </div>
+
+      <div class="toc-group">
+        <div class="toc-group-label">Assessment</div>
+        <ul class="toc-list">
+          <li><a href="#summary-field"><span class="toc-num">13</span>Summary Field</a></li>
+          <li><a href="#discrepancies"><span class="toc-num">14</span>Discrepancies</a></li>
+          <li><a href="#extra-documents"><span class="toc-num">15</span>Extra Documents</a></li>
+          <li><a href="#interview-suggestion"><span class="toc-num">16</span>Interview Suggestion</a></li>
+        </ul>
+      </div>
+
+      <div class="toc-group">
+        <div class="toc-group-label">Reference</div>
+        <ul class="toc-list">
+          <li><a href="#active-vs-placeholder"><span class="toc-num">17</span>Active vs Placeholder</a></li>
+          <li><a href="#open-questions"><span class="toc-num">18</span>Open Questions</a></li>
+        </ul>
+      </div>
+    </nav>
+  </aside>
+
+  <!-- ── Main Content ────────────────────────────────────── -->
+  <main class="content">
+
+    <h1 class="page-title">Current Finance Underwriting Baseline</h1>
+    <div class="page-subtitle">Internal reference document — loan underwriting officers only</div>
+    <div class="page-meta">
+      <span>Version 1.0</span>
+      <span>Status: <strong>Live</strong></span>
+      <span>8 active categories · 3 placeholder categories</span>
+    </div>
+
+    <!-- 1. Overview -->
+    <div class="section" id="overview">
+      <h2 class="section-heading">1. Overview</h2>
+      <p>This baseline defines how underwriting officers assess student loan applicants. The officer's
+      role is <strong>conservative by design</strong> — the goal is to minimize risk, not to
+      optimistically advocate for the applicant.</p>
+
+      <div class="notice notice-note">
+        <span class="notice-label">Core philosophy</span>
+        Act as a super detail-oriented loan underwriting officer. Do not be optimistic — be conservative.
+        Review all available information and minimize risk. A $1M bonus is on the line for doing it well.
+      </div>
+
+      <h3 class="subsection-heading">What the officer assesses</h3>
+      <ul>
+        <li>Applicant's basic information and loan questionnaire responses</li>
+        <li>Transcript of a live video interview</li>
+        <li>The specific program the student has chosen</li>
+        <li>Submitted documents — resume, transcripts, bank statements, etc.</li>
+        <li>System records including prior applications and loan history</li>
+      </ul>
+
+      <h3 class="subsection-heading">Score format</h3>
+      <p>All scores use a <strong>1–5 scale</strong> (5 = best, 1 = worst). If there is insufficient
+      information to score a category, mark it <code>N/A</code>, explain the gap, and request the
+      missing document under Extra Documents.</p>
+      <p>Every score must follow this format:</p>
+      <div class="formula">
+        <strong>Category Name (Score):</strong> explanation text.<br>
+        Example: <em>Job Readiness (3): They have some volunteer and internship experience but...</em>
+      </div>
+    </div>
+
+    <!-- 2. Inputs -->
+    <div class="section" id="inputs">
+      <h2 class="section-heading">2. Inputs</h2>
+      <p>Five template variables are injected at runtime. Each serves a distinct purpose.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Variable</th>
+            <th>Contents</th>
+            <th>Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>userInformation</code></td>
+            <td>Basic applicant profile, questionnaire responses</td>
+            <td>Primary reference for financial data</td>
+          </tr>
+          <tr>
+            <td><code>program</code></td>
+            <td>Program details, requirements, expected outcomes</td>
+            <td>Used for Program Fit scoring</td>
+          </tr>
+          <tr>
+            <td><code>interviewTranscript</code></td>
+            <td>Full verbatim transcript of the live video interview</td>
+            <td>Primary source — enriches and validates all other inputs</td>
+          </tr>
+          <tr>
+            <td><code>userDocuments</code></td>
+            <td>Resume, academic transcripts, bank statements, any uploaded files</td>
+            <td>Used for Education Fit, School Grades, asset verification</td>
+          </tr>
+          <tr>
+            <td><code>records</code></td>
+            <td>Internal system records, prior applications, credit data</td>
+            <td>Hardcut checks, prior loan history</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice notice-warn">
+        <span class="notice-label">Runtime dependency</span>
+        All five variables must be injected before assessment begins. Any category that depends on a
+        missing variable must be scored <code>N/A</code>.
+      </div>
+    </div>
+
+    <!-- 3. Core Outputs -->
+    <div class="section" id="outputs">
+      <h2 class="section-heading">3. Core Outputs</h2>
+      <p>The complete set of structured fields the officer must produce at the end of an assessment.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Field</th>
+            <th>Type</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Scores</strong></td>
+            <td>Object — per category</td>
+            <td>One score (1–5 or N/A) per scored category, each with a written justification.</td>
+          </tr>
+          <tr>
+            <td><strong>interview_suggestion</strong></td>
+            <td>Enum</td>
+            <td>Final recommendation: <code>approve</code>, <code>no_comment</code>, or <code>reject</code>. Accompanied by short reasoning.</td>
+          </tr>
+          <tr>
+            <td><strong>document_requests</strong></td>
+            <td>List</td>
+            <td>Additional documents needed. Each item must state what is expected and why it matters.</td>
+          </tr>
+          <tr>
+            <td><strong>video_screening_suggestion</strong></td>
+            <td>Markdown text</td>
+            <td>Concise report explaining score rationale per category. Compares questionnaire vs. interview transcript.</td>
+          </tr>
+          <tr>
+            <td><strong>diligence_remarks</strong></td>
+            <td>Copy of above</td>
+            <td>Identical to <code>video_screening_suggestion</code>. Clearly state reason for each score.</td>
+          </tr>
+          <tr>
+            <td><strong>summary</strong></td>
+            <td>Structured narrative</td>
+            <td>8 fixed sections. See <a href="#summary-field">§13 Summary Field</a>.</td>
+          </tr>
+          <tr>
+            <td><strong>discrepancies</strong></td>
+            <td>Numbered list</td>
+            <td>Flagged inconsistencies between sources. See <a href="#discrepancies">§14</a>.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 4. Scored Categories -->
+    <div class="section" id="scored-categories">
+      <h2 class="section-heading">4. Scored Categories</h2>
+      <p>All categories evaluated by the officer. Conditional categories have branching logic based on
+      the application tag <code>onshore-auto</code>.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Scale</th>
+            <th>Status</th>
+            <th>Formula / Notes</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Program Fit</strong></td>
+            <td>1–5</td>
+            <td><span class="dot dot-conditional"></span>Conditional</td>
+            <td>Rubric injected via <code>{% reference program_fit %}</code></td>
+          </tr>
+          <tr>
+            <td><strong>Job Readiness</strong></td>
+            <td>1–5</td>
+            <td><span class="dot dot-conditional"></span>Conditional</td>
+            <td>Branches on <code>onshore-auto</code> tag</td>
+          </tr>
+          <tr>
+            <td><strong>Industry Experience</strong></td>
+            <td>0–5</td>
+            <td><span class="dot dot-active"></span>Active</td>
+            <td>R×0.50 + D×0.20 + T×0.30</td>
+          </tr>
+          <tr>
+            <td><strong>Education Fit</strong></td>
+            <td>0–5</td>
+            <td><span class="dot dot-active"></span>Active</td>
+            <td>R×0.50 + D×0.20 + T×0.30</td>
+          </tr>
+          <tr>
+            <td><strong>Financial Resources</strong></td>
+            <td>1–5</td>
+            <td><span class="dot dot-conditional"></span>Conditional</td>
+            <td>Extended logic for <code>onshore-auto</code></td>
+          </tr>
+          <tr>
+            <td><strong>Network Support</strong></td>
+            <td>1–5</td>
+            <td><span class="dot dot-active"></span>Active</td>
+            <td>Canadian-based support prioritized</td>
+          </tr>
+          <tr>
+            <td><strong>School Grades</strong></td>
+            <td>Qualitative</td>
+            <td><span class="dot dot-active"></span>Active</td>
+            <td>Requires uploaded transcript</td>
+          </tr>
+          <tr>
+            <td><strong>Statement of Purpose</strong></td>
+            <td>0–5</td>
+            <td><span class="dot dot-active"></span>Active</td>
+            <td>Understanding×0.50 + Motivation×0.50</td>
+          </tr>
+          <tr class="row-placeholder">
+            <td><strong>Risk Level</strong></td>
+            <td>—</td>
+            <td><span class="dot dot-placeholder"></span>Placeholder</td>
+            <td>Write <code>N/A</code></td>
+          </tr>
+          <tr class="row-placeholder">
+            <td><strong>Grit</strong></td>
+            <td>—</td>
+            <td><span class="dot dot-placeholder"></span>Placeholder</td>
+            <td>Write <code>N/A</code></td>
+          </tr>
+          <tr class="row-placeholder">
+            <td><strong>Trustworthiness</strong></td>
+            <td>—</td>
+            <td><span class="dot dot-placeholder"></span>Placeholder</td>
+            <td>Write <code>N/A</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 5. Program Fit -->
+    <div class="section" id="program-fit">
+      <h2 class="section-heading">5. Program Fit</h2>
+      <p>Assesses how well the applicant's background aligns with the specific program they have chosen.</p>
+
+      <div class="notice notice-warn">
+        <span class="notice-label">External dependency — rubric not inline</span>
+        The Program Fit rubric is injected at runtime via <code>{% reference program_fit %}</code>.
+        It varies per program and must be supplied by the system before assessment begins.
+        If this reference is empty or fails to resolve, score Program Fit as <code>N/A</code>.
+      </div>
+
+      <p>Despite the external rubric, the output format is identical to all other categories:
+      a score of 1–5 with a written justification that references the program-specific criteria.</p>
+    </div>
+
+    <!-- 6. Job Readiness -->
+    <div class="section" id="job-readiness">
+      <h2 class="section-heading">6. Job Readiness</h2>
+      <p>Evaluates whether the applicant has sufficient, <em>qualified</em> work experience — regardless of
+      whether it directly relates to their field of study. Goal: assess responsibility, adaptability,
+      and transferable skills.</p>
+
+      <div class="notice notice-note">
+        <span class="notice-label">Conditional logic</span>
+        The scoring method differs depending on whether the application is tagged <code>onshore-auto</code>.
+      </div>
+
+      <div class="branch-toggle">
+        <button class="branch-btn on" onclick="toggle('jr','onshore',this)">Onshore Auto</button>
+        <button class="branch-btn" onclick="toggle('jr','standard',this)">Standard (Offshore)</button>
+      </div>
+
+      <div class="branch-panel on" id="jr-onshore">
+        <div class="notice notice-note" style="margin-bottom:10px;">
+          <span class="notice-label">Quick-pass rule (Onshore Auto)</span>
+          If the student currently holds a job in Canada earning <strong>more than CAD 1,000/month</strong>,
+          and the job appears serious (not underground) → score automatically <strong>5/5</strong>,
+          regardless of field. If they do not meet this threshold, apply the standard framework below.
+        </div>
+      </div>
+
+      <div class="branch-panel" id="jr-standard"></div>
+
+      <h3 class="subsection-heading">Step 1 — Categorize work experience</h3>
+      <div class="two-col">
+        <div class="col-box">
+          <div class="col-box-title">✓ Qualified work — counts toward score</div>
+          <ul>
+            <li>Consistent responsibility, skill development, commitment</li>
+            <li>Problem-solving, customer interaction, or teamwork</li>
+            <li>Example: cashier, restaurant team worker, call center rep (20+ hrs/week)</li>
+          </ul>
+        </div>
+        <div class="col-box" style="background:#fafafa;border-color:#c8ccd1;color:#54595d;">
+          <div class="col-box-title" style="color:#54595d;">✗ Unqualified work — does not count</div>
+          <ul>
+            <li>Simple, repetitive tasks with little responsibility</li>
+            <li>No decision-making, professional growth, or accountability</li>
+            <li>Example: occasional babysitting, informal odd jobs, infrequent gig work</li>
+          </ul>
+        </div>
+      </div>
+      <p class="muted">Volunteer work is less qualified than paid work.</p>
+
+      <h3 class="subsection-heading">Step 2 — Assign score</h3>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:50px;">Score</th>
+            <th>Level</th>
+            <th>Criteria</th>
+            <th>Example</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="score-cell score-5">5</td>
+            <td><strong>Strong</strong></td>
+            <td>Formal, structured employment. Part-time &gt;6 months or any full-time period. Clear transferable skills.</td>
+            <td>Cashier managing payments; full-time restaurant lead; call center representative.</td>
+          </tr>
+          <tr>
+            <td class="score-cell score-3">3</td>
+            <td><strong>Moderate</strong></td>
+            <td>Work present but responsibilities minimal or inconsistent. Short-term roles, partial reliability.</td>
+            <td>Server for 2–3 months; multiple short-term jobs without building habits.</td>
+          </tr>
+          <tr>
+            <td class="score-cell score-1">1</td>
+            <td><strong>Weak</strong></td>
+            <td>Mostly unqualified or casual. No significant responsibility or training.</td>
+            <td>Occasional babysitting; assisting family business informally; one-time event staffing.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 7. Industry Experience -->
+    <div class="section" id="industry-experience">
+      <h2 class="section-heading">7. Industry Experience</h2>
+      <p>Evaluates relevant, verifiable work experience directly related to the intended field of study.
+      Unverifiable experience scores 0 across all sub-criteria.</p>
+
+      <div class="formula">
+        Final Score = (Relevance × 0.50) + (Duration × 0.20) + (Transferability × 0.30)
+      </div>
+
+      <h3 class="subsection-heading">7.1 Relevance to industry (50%)</h3>
+      <p>Does the work experience directly relate to the candidate's field of study or intended career?</p>
+      <table>
+        <thead><tr><th style="width:55px;">Score</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td class="score-cell score-5">5</td><td>Directly relevant to the intended field</td></tr>
+          <tr><td class="score-cell score-4">4</td><td>Mostly relevant with some transferable industry exposure</td></tr>
+          <tr><td class="score-cell score-3">3</td><td>Somewhat relevant but not directly related</td></tr>
+          <tr><td class="score-cell score-2">2</td><td>Minimally relevant, few transferable skills</td></tr>
+          <tr><td class="score-cell score-1">1</td><td>Completely unrelated to the industry</td></tr>
+          <tr><td class="score-cell score-0">0</td><td>No industry experience provided, or unverifiable</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-heading">7.2 Duration of industry-specific experience (20%)</h3>
+      <p>How long has the candidate worked in industry-related roles? Adjust for part-time
+      (6 months part-time ≠ 6 months full-time).</p>
+      <table>
+        <thead><tr><th style="width:55px;">Score</th><th>Duration</th></tr></thead>
+        <tbody>
+          <tr><td class="score-cell score-5">5</td><td>5+ years</td></tr>
+          <tr><td class="score-cell score-4">4</td><td>3–4 years</td></tr>
+          <tr><td class="score-cell score-3">3</td><td>1–2 years</td></tr>
+          <tr><td class="score-cell score-2">2</td><td>6–11 months</td></tr>
+          <tr><td class="score-cell score-1">1</td><td>Less than 6 months</td></tr>
+          <tr><td class="score-cell score-0">0</td><td>No industry experience or unverifiable</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-heading">7.3 Depth and transferability of skills (30%)</h3>
+      <p>Did the experience develop relevant technical or professional skills?
+      Volunteer work is considered low-depth and must be flagged.</p>
+      <table>
+        <thead><tr><th style="width:55px;">Score</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td class="score-cell score-5">5</td><td>Strong transferable skills essential for the industry</td></tr>
+          <tr><td class="score-cell score-4">4</td><td>Some transferable skills relevant to the field</td></tr>
+          <tr><td class="score-cell score-3">3</td><td>General workplace skills but limited industry-specific skills</td></tr>
+          <tr><td class="score-cell score-2">2</td><td>Minimal transferable industry knowledge</td></tr>
+          <tr><td class="score-cell score-1">1</td><td>No transferable industry knowledge</td></tr>
+          <tr><td class="score-cell score-0">0</td><td>No industry experience or unverifiable</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 8. Education Fit -->
+    <div class="section" id="education-fit">
+      <h2 class="section-heading">8. Education Fit</h2>
+      <p>Assesses whether the candidate's prior education is relevant to the program they plan to study.</p>
+
+      <div class="formula">
+        Final Score = (Relevance × 0.50) + (Duration × 0.20) + (Transferability × 0.30)
+      </div>
+
+      <h3 class="subsection-heading">8.1 Relevance to new program (50%)</h3>
+      <p>How closely does prior education align with the new field of study?</p>
+      <table>
+        <thead><tr><th style="width:55px;">Score</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td class="score-cell score-5">5</td><td>Highly relevant — directly aligns with the new field</td></tr>
+          <tr><td class="score-cell score-4">4</td><td>Mostly relevant with substantial overlap</td></tr>
+          <tr><td class="score-cell score-3">3</td><td>Moderate relevance — shares some foundational topics</td></tr>
+          <tr><td class="score-cell score-2">2</td><td>Minimal overlap or useful subject matter</td></tr>
+          <tr><td class="score-cell score-1">1</td><td>Entirely unrelated to the new field</td></tr>
+          <tr><td class="score-cell score-0">0</td><td>No verifiable prior education or credentials</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-heading">8.2 Duration and level of academic study (20%)</h3>
+      <p>How extensive was the education? Full degree vs. single course matters.</p>
+      <table>
+        <thead><tr><th style="width:55px;">Score</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td class="score-cell score-5">5</td><td>Multi-year study — complete degree or multiple relevant degrees in the same field</td></tr>
+          <tr><td class="score-cell score-4">4</td><td>Degree with significant relevant coursework</td></tr>
+          <tr><td class="score-cell score-3">3</td><td>1–2 years of relevant coursework, possibly post-secondary</td></tr>
+          <tr><td class="score-cell score-2">2</td><td>Less than 1 year or only a few courses completed</td></tr>
+          <tr><td class="score-cell score-1">1</td><td>Very limited exposure — short course or minor component</td></tr>
+          <tr><td class="score-cell score-0">0</td><td>No relevant academic experience or unverifiable records</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-heading">8.3 Depth and transferability of knowledge (30%)</h3>
+      <p>What level of academic skills has the candidate gained, and how applicable to the new program?</p>
+      <table>
+        <thead><tr><th style="width:55px;">Score</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td class="score-cell score-5">5</td><td>Strong theoretical and practical knowledge directly applicable to the new program</td></tr>
+          <tr><td class="score-cell score-4">4</td><td>Solid foundation of concepts and methods that can be built upon</td></tr>
+          <tr><td class="score-cell score-3">3</td><td>General academic skills or related concepts, limited direct application</td></tr>
+          <tr><td class="score-cell score-2">2</td><td>Minimal relevant depth — may need extensive bridging courses</td></tr>
+          <tr><td class="score-cell score-1">1</td><td>Virtually no useful knowledge base for the new field</td></tr>
+          <tr><td class="score-cell score-0">0</td><td>No verifiable education or discernible transferable knowledge</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 9. Financial Resources -->
+    <div class="section" id="financial-resources">
+      <h2 class="section-heading">9. Financial Resources</h2>
+      <p>Assesses the applicant's complete financial picture: assets, debt, and cash collateral sourcing.
+      Logic expands for <code>onshore-auto</code> applicants who have Canadian financial data available.</p>
+
+      <div class="branch-toggle">
+        <button class="branch-btn on" onclick="toggle('fr','onshore',this)">Onshore Auto</button>
+        <button class="branch-btn" onclick="toggle('fr','standard',this)">Standard (Offshore)</button>
+      </div>
+
+      <div class="branch-panel on" id="fr-onshore">
+        <div class="notice notice-note" style="margin-bottom:10px;">
+          <span class="notice-label">Onshore Auto — additional data available</span>
+          Monthly employment income, rent and living expenses, verified Canadian bank balances,
+          and a Canadian credit report (utilization + repayment history) may be available.
+          Canadian-based assets are prioritized over assets back home.
+        </div>
+      </div>
+      <div class="branch-panel" id="fr-standard">
+        <div class="notice notice-note" style="margin-bottom:10px;">
+          <span class="notice-label">Standard — offshore applicants</span>
+          Assets and debt assessed from loan questionnaire and interview transcript only.
+          No Canadian financial records available.
+        </div>
+      </div>
+
+      <h3 class="subsection-heading">9.1 Assets</h3>
+      <p><strong>Cross-verification first:</strong> compare declared assets in the questionnaire against the
+      interview transcript. Flag any discrepancies side-by-side.</p>
+
+      <div class="two-col">
+        <div class="col-box">
+          <div class="col-box-title">Assets in Canada (higher weight)</div>
+          <ul>
+            <li>Canadian savings (verified bank account)</li>
+            <li>Car registered in Canada</li>
+            <li>Other liquid assets (GICs, chequing)</li>
+          </ul>
+        </div>
+        <div class="col-box">
+          <div class="col-box-title">Assets back home (lower weight)</div>
+          <ul>
+            <li>Savings · Land · Car · House</li>
+            <li>Other assets (investments, businesses)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="formula">
+        Liquidity order (highest → lowest): Savings → Car → Land → House → Other Assets
+      </div>
+
+      <h3 class="subsection-heading">9.2 Source of cash collateral</h3>
+      <p>Cash collateral is the upfront amount the student provides to secure the loan.
+      Typically <strong>CAD 4,500 to CAD 18,000</strong>. How it is sourced materially affects
+      the financial picture.</p>
+
+      <table>
+        <thead><tr><th>Source type</th><th>Financial impact</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Gift</strong> from friends/family</td>
+            <td>Treated as additional asset → <strong>increases total assets</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Loan</strong> (friends, family, or lender)</td>
+            <td>Increases total debt → <strong>increases debt obligations</strong></td>
+          </tr>
+          <tr>
+            <td><strong>Asset sale</strong> (liquidation)</td>
+            <td>Converts illiquid to liquid — no net change to assets or debt</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="formula">
+        Total Assets = Reported Assets + Gift Collateral (if gifted)<br>
+        Total Debt   = Reported Debt   + Loan Collateral (if borrowed)
+      </div>
+
+      <h3 class="subsection-heading">9.3 Debt evaluation</h3>
+      <p><strong>Cross-verification first:</strong> compare questionnaire, interview transcript, and credit
+      report (onshore only).</p>
+      <ul>
+        <li><strong>Lender type:</strong> Soft (family/friends) vs. Hard (bank/institution)</li>
+        <li><strong>Loan amount</strong></li>
+        <li><strong>Monthly repayment</strong></li>
+        <li><strong>Repayment duration</strong></li>
+        <li><strong>Credit utilization rate</strong> — from credit report (onshore only)</li>
+        <li><strong>Repayment history</strong> — missed or late payments (onshore only)</li>
+      </ul>
+      <p class="muted">Include all debts mentioned, plus any loan taken for cash collateral.</p>
+
+      <h3 class="subsection-heading">9.4 Income statement (Onshore Auto only)</h3>
+      <p>Evaluate short-term cash flow. If earning &gt;CAD 1,000/month, treat as serious employment.
+      Note relocation risk: if the job is far from school, the student may lose income when
+      repayment starts.</p>
+      <ul>
+        <li><strong>Income:</strong> monthly earnings, employment status</li>
+        <li><strong>Expenses:</strong> rent, utilities, food, transportation</li>
+      </ul>
+
+      <h3 class="subsection-heading">9.5 Full financial picture scoring</h3>
+      <ul>
+        <li>Liquidity and accessibility of Canadian-based assets (onshore: primary weight)</li>
+        <li>Monthly income vs. living expenses (onshore only)</li>
+        <li>Size, structure, and repayment behavior around debt</li>
+        <li>Verifiability and reliability of cash collateral source</li>
+      </ul>
+    </div>
+
+    <!-- 10. Network Support -->
+    <div class="section" id="network-support">
+      <h2 class="section-heading">10. Network Support</h2>
+      <p>Evaluates personal network support — emotional, financial, or otherwise. Financial support
+      is weighted more heavily. Canadian-based support is prioritized over home-country support.</p>
+
+      <table>
+        <thead><tr><th style="width:55px;">Score</th><th>Level</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="score-cell score-5">5</td><td><strong>Strong</strong></td><td>Strong financial and emotional support from close network based in Canada</td></tr>
+          <tr><td class="score-cell score-4">4</td><td><strong>Moderate</strong></td><td>Moderate financial or emotional support, with some presence in Canada</td></tr>
+          <tr><td class="score-cell score-3">3</td><td><strong>Partial</strong></td><td>Support mostly from country of origin, little or no Canadian-based help</td></tr>
+          <tr><td class="score-cell score-2">2</td><td><strong>Limited</strong></td><td>Limited or vague support; financial help is uncertain or informal</td></tr>
+          <tr><td class="score-cell score-1">1</td><td><strong>None</strong></td><td>No evidence of support; student appears isolated with no financial or emotional backing</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 11. School Grades -->
+    <div class="section" id="school-grades">
+      <h2 class="section-heading">11. School Grades</h2>
+      <p>Based on the student's uploaded transcript, degree, courses, and grades, the officer provides
+      a qualitative narrative of what the student appears academically strong in.</p>
+
+      <div class="notice notice-note">
+        <span class="notice-label">Document-dependent</span>
+        Requires the uploaded academic transcript. Examine specific course titles to identify subject areas
+        of strength. This category produces a qualitative narrative, not a numerical score.
+        If the transcript is missing, mark <code>N/A</code> and request it under Extra Documents.
+      </div>
+
+      <ul>
+        <li>Review transcript, degree, courses, and grades</li>
+        <li>Identify which fields stand out — look specifically at course titles</li>
+        <li>Explain what the student appears to excel at based on their academic record</li>
+      </ul>
+    </div>
+
+    <!-- 12. Statement of Purpose -->
+    <div class="section" id="statement-of-purpose">
+      <h2 class="section-heading">12. Statement of Purpose</h2>
+      <p>Assesses clarity of motivation and realistic understanding of the program. A strong statement
+      demonstrates well-informed expectations and clear, specific reasons for choosing the program.</p>
+
+      <div class="formula">
+        Final Score = (Realistic Understanding × 0.50) + (Motivation × 0.50)
+      </div>
+
+      <h3 class="subsection-heading">12.1 Realistic understanding of program and outcomes (50%)</h3>
+      <p>Does the applicant genuinely understand what the program involves and what it leads to?</p>
+      <table>
+        <thead><tr><th style="width:55px;">Score</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td class="score-cell score-5">5</td><td>Thorough and realistic understanding of curriculum, requirements, and career outcomes. Well-informed, achievable expectations.</td></tr>
+          <tr><td class="score-cell score-4">4</td><td>Solid understanding with mostly realistic expectations. Only minor gaps or slight over-optimism.</td></tr>
+          <tr><td class="score-cell score-3">3</td><td>Basic understanding. Some expectations vague or mildly unrealistic. Fair but incomplete grasp.</td></tr>
+          <tr><td class="score-cell score-2">2</td><td>Limited understanding with significant misconceptions or overly optimistic expectations.</td></tr>
+          <tr><td class="score-cell score-1">1</td><td>Little or no understanding. Expectations clearly unrealistic — no meaningful research evident.</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-heading">12.2 Motivation for pursuing the program (50%)</h3>
+      <p>Why does the applicant want to pursue this program? Is the motivation genuine, specific, and compelling?</p>
+      <table>
+        <thead><tr><th style="width:55px;">Score</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td class="score-cell score-5">5</td><td>Extremely clear and compelling. Genuine passion with specific, well-grounded reasons for choosing this program.</td></tr>
+          <tr><td class="score-cell score-4">4</td><td>Clearly explained with solid reasoning. Genuine interest demonstrated, passion may be slightly muted.</td></tr>
+          <tr><td class="score-cell score-3">3</td><td>Adequately expressed but not particularly strong. Reasons somewhat generic or underdeveloped.</td></tr>
+          <tr><td class="score-cell score-2">2</td><td>Weak or vague motivation. Only superficial or unclear reasons provided.</td></tr>
+          <tr><td class="score-cell score-1">1</td><td>No clear motivation. Fails to explain why they want to pursue the program.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 13. Summary Field -->
+    <div class="section" id="summary-field">
+      <h2 class="section-heading">13. Summary Field</h2>
+      <p>A structured narrative following the <code>summaryInstruction</code> template.
+      Contains 8 mandatory bold-titled sections. Only section titles appear in bold. The sections below
+      are always produced; additional sections apply only to <code>onshore-auto</code> applicants.</p>
+
+      <div class="sum-block">
+        <div class="sum-block-title">Work Experience Back Home</div>
+        <div class="sum-block-body">
+          <p class="muted" style="margin-bottom:8px;">Work outside Canada only. Interview Transcript is primary; resume is baseline. Exclude if not mentioned in interview. Flag if volunteer, not on resume, or if discrepancies exist.</p>
+          <div class="factor-row"><span class="factor-n">1.</span>Description — objective. Flag volunteer work explicitly.</div>
+          <div class="factor-row"><span class="factor-n">2.</span>Years — number of years of experience</div>
+          <div class="factor-row"><span class="factor-n">3.</span>Skills — skilled, semi-skilled, or unskilled</div>
+          <div class="factor-row"><span class="factor-n">4.</span>Quality — distinguish keyword-dropper from genuine practitioner</div>
+          <div class="factor-row"><span class="factor-n">5.</span>Discrepancies — potential discrepancies or low-credibility areas</div>
+        </div>
+      </div>
+
+      <div class="sum-block">
+        <div class="sum-block-title">Education Experience Back Home</div>
+        <div class="sum-block-body">
+          <p class="muted" style="margin-bottom:8px;">Education outside Canada only. Use resume + transcript + interview. Flag if present in resume/interview but missing from documents. Assess only relevant education. Evaluate each experience separately with degree name as sub-heading.</p>
+          <div class="factor-row"><span class="factor-n">1.</span>Name of the degree</div>
+          <div class="factor-row"><span class="factor-n">2.</span>Degree level</div>
+          <div class="factor-row"><span class="factor-n">3.</span>Field of study</div>
+          <div class="factor-row"><span class="factor-n">4.</span>Number of years of study</div>
+          <div class="factor-row"><span class="factor-n">5.</span>Completion status — Completed, In Progress, or Unverified</div>
+          <div class="factor-row"><span class="factor-n">6.</span>What the student is learning / quality of learning</div>
+          <div class="factor-row"><span class="factor-n">7.</span>Fields of interest and motivation</div>
+          <div class="factor-row"><span class="factor-n">8.</span>Potential discrepancies / low-credibility areas</div>
+        </div>
+      </div>
+
+      <div class="notice notice-warn">
+        <span class="notice-label">Onshore Auto — additional summary sections</span>
+        The following are produced <strong>only</strong> for <code>onshore-auto</code> applications:
+        <em>Education Experience In Canada</em> (9 factors),
+        <em>Work Experience Canada</em> (9 factors),
+        <em>Housing and Other Costs</em> (4 factors), and
+        <em>Compliance</em> (study permit conditions check).
+      </div>
+
+      <div class="sum-block">
+        <div class="sum-block-title">Personal Statement</div>
+        <div class="sum-block-body">
+          <p class="muted" style="margin-bottom:8px;">Motivation for the chosen study program — depth of interest, relevance to background, and future career goals.</p>
+          <div class="factor-row"><span class="factor-n">1.</span>Short summary of the applicant's motivation</div>
+          <div class="factor-row"><span class="factor-n">2.</span>Assessment of whether interest seems genuine</div>
+          <div class="factor-row"><span class="factor-n">3.</span>Strong, moderate, or weak potential to succeed based on motivation</div>
+          <div class="factor-row"><span class="factor-n">4.</span>Do they show curiosity, self-initiative, or relevant preparation?</div>
+          <div class="factor-row"><span class="factor-n">5.</span>Are future goals aligned with program outcomes?</div>
+        </div>
+      </div>
+
+      <div class="sum-block">
+        <div class="sum-block-title">Family Background</div>
+        <div class="sum-block-body">
+          <div class="factor-row"><span class="factor-n">1.</span>Principal dependants — number of children</div>
+          <div class="factor-row"><span class="factor-n">2.</span>Other dependants — financial responsibility for anyone else (elderly parents, siblings, etc.)</div>
+          <div class="factor-row"><span class="factor-n">3.</span>Guarantor in Canada and relationship with the student</div>
+          <div class="factor-row"><span class="factor-n">4.</span>Family and support in Canada</div>
+          <div class="factor-row"><span class="factor-n">5.</span>Source of cash collateral — if described as a "gift," clarify and verify origin of funds</div>
+        </div>
+      </div>
+
+      <div class="sum-block">
+        <div class="sum-block-title">Source of Cash Collateral</div>
+        <div class="sum-block-body">
+          <p>Explain how the student plans to finance the cash collateral. Confirm whether it was borrowed.
+          Flag any contradicting information between questionnaire and interview.</p>
+        </div>
+      </div>
+
+      <div class="sum-block">
+        <div class="sum-block-title">Monthly Payment Plan</div>
+        <div class="sum-block-body">
+          <p>One sentence on how the student plans to make monthly payments. Examples:</p>
+          <ul style="margin-top:4px;">
+            <li>"Plans to work part-time during school"</li>
+            <li>"Plans to use personal savings"</li>
+            <li>"No answer provided" — if answer is absent or unreasonable</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="sum-block">
+        <div class="sum-block-title">Assets</div>
+        <div class="sum-block-body">
+          <p class="muted" style="margin-bottom:8px;">Compare questionnaire values against interview. Flag discrepancies side-by-side. Always mention the asset category with each amount.</p>
+          <div class="factor-row"><span class="factor-n">1.</span>Value Savings</div>
+          <div class="factor-row"><span class="factor-n">2.</span>Value Land</div>
+          <div class="factor-row"><span class="factor-n">3.</span>Value Car</div>
+          <div class="factor-row"><span class="factor-n">4.</span>Value House</div>
+          <div class="factor-row"><span class="factor-n">5.</span>Amount of Cash Collateral Gifted — only if received as gift or asset sale; exclude if borrowed</div>
+        </div>
+      </div>
+
+      <div class="sum-block">
+        <div class="sum-block-title">Debt</div>
+        <div class="sum-block-body">
+          <p class="muted" style="margin-bottom:8px;">Most applicants claim no debt in the interview. Compare questionnaire vs. interview side-by-side. Include cash collateral debt if borrowed.</p>
+          <div class="factor-row"><span class="factor-n">1.</span>Outstanding loan amount</div>
+          <div class="factor-row"><span class="factor-n">2.</span>Monthly payment</div>
+          <div class="factor-row"><span class="factor-n">3.</span>Duration of repayment</div>
+          <div class="factor-row"><span class="factor-n">4.</span>Amount of Cash Collateral Borrowed — only if borrowed; exclude if gifted or from asset sale</div>
+        </div>
+      </div>
+
+      <div class="sum-block" style="border-left:3px solid #b32424;">
+        <div class="sum-block-title" style="color:#b32424;">Hardcuts</div>
+        <div class="sum-block-body">
+          <p style="margin-bottom:10px;">Conditions that <strong>automatically disqualify</strong> an applicant.
+          Flag immediately if any apply or if there is reasonable suspicion.</p>
+          <div class="hardcut-item"><span class="hardcut-x">✕</span>Filed for any type of bankruptcy</div>
+          <div class="hardcut-item"><span class="hardcut-x">✕</span>Previously applied for a Post-Graduate Work Permit (PGWP)</div>
+          <div class="hardcut-item"><span class="hardcut-x">✕</span>Criminal record or involved in a current lawsuit</div>
+          <div class="hardcut-item"><span class="hardcut-x">✕</span>Already has a loan with Passage</div>
+          <div class="hardcut-item"><span class="hardcut-x">✕</span>Defaulted on a previous loan</div>
+          <div class="hardcut-item"><span class="hardcut-x">✕</span>Participated in illegal activities</div>
+          <div class="two-col" style="margin-top:12px;gap:8px;">
+            <div style="background:#d4edda;border:1px solid #6cb878;padding:8px 10px;font-size:12.5px;color:#155724;font-family:Arial,sans-serif;">
+              <strong>If none apply:</strong> write "NO hardcuts"
+            </div>
+            <div style="background:#f8d7da;border:1px solid #e4969c;padding:8px 10px;font-size:12.5px;color:#721c24;font-family:Arial,sans-serif;">
+              <strong>If any apply:</strong> write "HARDCUT FAILED" and specify the condition
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sum-block">
+        <div class="sum-block-title">List of Risk Signals</div>
+        <div class="sum-block-body">
+          <p style="margin-bottom:8px;">Flag <strong>at least five</strong>. Numbered list, vertical. Use judgment to identify additional signals.</p>
+          <ul>
+            <li>Student on study permit beyond the legal leave period — immigration compliance concern</li>
+            <li>Dropped out of previous program without good reason — instability or lack of commitment</li>
+            <li>Dropped out of school in home country — history of academic discontinuity</li>
+            <li>Fails to maintain full-time student status — risk of permit non-compliance / deportation</li>
+            <li>Overstayed visa in the past — disregard for immigration rules</li>
+            <li>Unable to understand interview questions — poor comprehension</li>
+            <li>Low English proficiency — risk to academic success and integration</li>
+            <li>Incoherent interview answers — poor communication</li>
+            <li>Frequently changes programs without completing any — indecision or lack of focus</li>
+            <li>History of failing courses repeatedly — difficulty keeping up academically</li>
+            <li>Misunderstands the nature of the program — lack of preparation or research</li>
+            <li>History of defaulting on previous loans — financial unreliability</li>
+            <li>Has family in Canada but did not sign them up as guarantors</li>
+            <li>History of studying abroad outside home country (e.g., US, UK)</li>
+            <li>Discrepancy in source of cash collateral</li>
+            <li>Total interview response time below 10 minutes</li>
+            <li>More than 2 dependants</li>
+          </ul>
+          <div class="notice notice-note" style="margin-top:10px;">
+            <span class="notice-label">Explicitly ignored</span>
+            Do <strong>not</strong> flag mismatch between interview name and document name.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 14. Discrepancies -->
+    <div class="section" id="discrepancies">
+      <h2 class="section-heading">14. Discrepancies</h2>
+      <p>A numbered, vertical list of flagged inconsistencies between data sources.</p>
+
+      <table>
+        <thead><tr><th>Type</th><th>Priority</th><th>Rule</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Debt value mismatches</strong></td>
+            <td style="background:#f8d7da;color:#721c24;font-weight:bold;">High</td>
+            <td>Always escalate. Conflicting debt figures are a serious risk signal.</td>
+          </tr>
+          <tr>
+            <td><strong>Debt story inconsistencies</strong></td>
+            <td style="background:#f8d7da;color:#721c24;font-weight:bold;">High</td>
+            <td>Narrative-level contradictions about debt (e.g., "no debt" in interview vs. loan in questionnaire).</td>
+          </tr>
+          <tr>
+            <td><strong>Asset discrepancies</strong></td>
+            <td style="background:#fff3cd;color:#856404;">Low</td>
+            <td>Only flag if the discrepancy exceeds <strong>CAD 5,000</strong>.</td>
+          </tr>
+          <tr>
+            <td><strong>Story discrepancy</strong></td>
+            <td style="background:#f8d7da;color:#721c24;font-weight:bold;">Required</td>
+            <td>At least one narrative-level discrepancy must always be flagged — timeline, intentions, or stated facts.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 15. Extra Documents -->
+    <div class="section" id="extra-documents">
+      <h2 class="section-heading">15. Extra Documents</h2>
+      <p>A numbered list of documents that would make a significant impact on the assessment.
+      Feeds directly into the <code>document_requests</code> output field.</p>
+
+      <div class="notice notice-note">
+        <span class="notice-label">Scoping rule</span>
+        Only list documents that would <strong>significantly impact</strong> the assessment.
+        For each document, state what information you expect it to provide and why it matters for
+        the scoring decision. Documents here should correspond to any <code>N/A</code> scores where
+        evidence was insufficient.
+      </div>
+    </div>
+
+    <!-- 16. Interview Suggestion -->
+    <div class="section" id="interview-suggestion">
+      <h2 class="section-heading">16. Interview Suggestion</h2>
+      <p>The final recommendation. Exactly one of three values, accompanied by short reasoning.</p>
+
+      <div class="chips">
+        <span class="chip chip-approve">approve</span>
+        <span class="chip chip-neutral">no_comment</span>
+        <span class="chip chip-reject">reject</span>
+      </div>
+
+      <table style="margin-top:12px;">
+        <thead><tr><th>Value</th><th>Meaning</th><th>When to use</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>approve</strong></td>
+            <td>Recommend for loan approval</td>
+            <td>Profile is strong enough across all key categories to proceed confidently</td>
+          </tr>
+          <tr>
+            <td><strong>no_comment</strong></td>
+            <td>Insufficient information for a clear recommendation</td>
+            <td>Key scores are N/A, critical documents are missing, or the picture is genuinely ambiguous</td>
+          </tr>
+          <tr>
+            <td><strong>reject</strong></td>
+            <td>Recommend against approval</td>
+            <td>Risk signals are too high, hardcuts triggered, or financial picture is too weak</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="notice notice-warn" style="margin-top:12px;">
+        <span class="notice-label">Conservative stance</span>
+        When in doubt, lean toward <code>reject</code> over <code>approve</code>. The mission is risk
+        minimization, not applicant advocacy. If additional documents are needed, use <code>no_comment</code>
+        and populate <code>document_requests</code>.
+      </div>
+    </div>
+
+    <!-- 17. Active vs Placeholder -->
+    <div class="section" id="active-vs-placeholder">
+      <h2 class="section-heading">17. Active vs Placeholder Categories</h2>
+      <p>Quick reference for what is scored today versus reserved for future use.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Scale</th>
+            <th>Logic</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Program Fit</strong></td>
+            <td><span class="dot dot-conditional"></span>Conditional</td>
+            <td>1–5</td>
+            <td>External rubric injected at runtime</td>
+          </tr>
+          <tr>
+            <td><strong>Job Readiness</strong></td>
+            <td><span class="dot dot-conditional"></span>Conditional</td>
+            <td>1–5</td>
+            <td>Onshore: auto-5 if &gt;CAD 1k/mo; else framework</td>
+          </tr>
+          <tr>
+            <td><strong>Industry Experience</strong></td>
+            <td><span class="dot dot-active"></span>Active</td>
+            <td>0–5</td>
+            <td>R×0.50 + D×0.20 + T×0.30</td>
+          </tr>
+          <tr>
+            <td><strong>Education Fit</strong></td>
+            <td><span class="dot dot-active"></span>Active</td>
+            <td>0–5</td>
+            <td>R×0.50 + D×0.20 + T×0.30</td>
+          </tr>
+          <tr>
+            <td><strong>Financial Resources</strong></td>
+            <td><span class="dot dot-conditional"></span>Conditional</td>
+            <td>1–5</td>
+            <td>Extended logic for onshore-auto</td>
+          </tr>
+          <tr>
+            <td><strong>Network Support</strong></td>
+            <td><span class="dot dot-active"></span>Active</td>
+            <td>1–5</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>School Grades</strong></td>
+            <td><span class="dot dot-active"></span>Active</td>
+            <td>Qualitative</td>
+            <td>—</td>
+          </tr>
+          <tr>
+            <td><strong>Statement of Purpose</strong></td>
+            <td><span class="dot dot-active"></span>Active</td>
+            <td>0–5</td>
+            <td>Understanding×0.50 + Motivation×0.50</td>
+          </tr>
+          <tr class="row-placeholder">
+            <td><strong>Risk Level</strong></td>
+            <td><span class="dot dot-placeholder"></span>Placeholder</td>
+            <td>—</td>
+            <td>Write <code>N/A</code></td>
+          </tr>
+          <tr class="row-placeholder">
+            <td><strong>Grit</strong></td>
+            <td><span class="dot dot-placeholder"></span>Placeholder</td>
+            <td>—</td>
+            <td>Write <code>N/A</code></td>
+          </tr>
+          <tr class="row-placeholder">
+            <td><strong>Trustworthiness</strong></td>
+            <td><span class="dot dot-placeholder"></span>Placeholder</td>
+            <td>—</td>
+            <td>Write <code>N/A</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- 18. Open Questions -->
+    <div class="section" id="open-questions">
+      <h2 class="section-heading">18. Open Questions and Ambiguities</h2>
+      <p>Known dependencies and unresolved logic that affect how this baseline is applied.</p>
+
+      <div class="notice notice-warn" style="margin-bottom:10px;">
+        <span class="notice-label">Template variables must be resolved at runtime</span>
+        All five variables (<code>userInformation</code>, <code>program</code>, <code>interviewTranscript</code>,
+        <code>userDocuments</code>, <code>records</code>) are placeholders until the system injects real applicant data.
+        Any score that depends on a missing variable must be marked <code>N/A</code>.
+      </div>
+
+      <div class="notice notice-warn" style="margin-bottom:10px;">
+        <span class="notice-label">onshore-auto tag drives branching logic</span>
+        Job Readiness, Financial Resources, and the Summary Field have conditional logic dependent on
+        <code>applicationTags contains "onshore-auto"</code>. If the tag is absent or ambiguous, default
+        to the Standard (offshore) path.
+      </div>
+
+      <div class="notice notice-warn" style="margin-bottom:10px;">
+        <span class="notice-label">Program Fit rubric is an external dependency</span>
+        <code>{% reference program_fit %}</code> must resolve to a valid, program-specific rubric.
+        If the reference fails or is empty, Program Fit must be scored <code>N/A</code>.
+        This is not handled within the baseline.
+      </div>
+
+      <div class="notice notice-warn" style="margin-bottom:10px;">
+        <span class="notice-label">Volunteer work requires explicit flagging</span>
+        Volunteer experience is lower quality than paid work across Job Readiness, Industry Experience,
+        and the Work Experience summary section. The baseline does not auto-detect this — the officer
+        must identify and flag it from the interview and documents.
+      </div>
+
+      <div class="notice notice-warn">
+        <span class="notice-label">Unverifiable experience scores zero</span>
+        Across Industry Experience and Education Fit, any unverifiable experience scores 0 on
+        <em>all</em> sub-criteria — not just relevance. Officers must proactively flag unverifiable
+        claims and request supporting documents.
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  // Branch toggle
+  function toggle(group, variant, btn) {
+    const btns = btn.parentElement.querySelectorAll('.branch-btn');
+    btns.forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+
+    ['onshore','standard'].forEach(v => {
+      const el = document.getElementById(group + '-' + v);
+      if (el) el.style.display = v === variant ? 'block' : 'none';
+    });
+  }
+
+  // TOC scroll spy
+  const sections = document.querySelectorAll('.section[id]');
+  const links = document.querySelectorAll('.toc-list a');
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+
+  sections.forEach(s => obs.observe(s));
+</script>
+
+</body>
+</html>

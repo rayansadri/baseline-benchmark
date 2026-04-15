@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Benchmark Maker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #ffffff;
+      --bg-soft:  #f8f8f8;
+      --bg-hover: #fafafa;
+      --text:     #111111;
+      --mid:      #555555;
+      --dim:      #999999;
+      --border:   #e5e5e5;
+      --bar-h:    56px;
+      --nav-h:    40px;
+
+      /* column palette — subtle, Apple-minimal */
+      --old-bg:      #f8f8f8;
+      --old-head:    #71717a;
+      --new-bg:      #f0f8ff;
+      --new-head:    #0369a1;
+      --strong-bg:   #f0fdf4;
+      --strong-head: #15803d;
+      --weak-bg:     #fff7ed;
+      --weak-head:   #c2410c;
+      --gap-bg:      #fffbeb;
+      --gap-head:    #92400e;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 14px;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Top bar ──────────────────────────── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: var(--bar-h);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 32px;
+      z-index: 100;
+    }
+    .topbar-left { display: flex; align-items: baseline; gap: 14px; }
+    .page-title  { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
+    .page-sub    { font-size: 12px; color: var(--dim); }
+    .topbar-right{ display: flex; align-items: center; gap: 8px; }
+
+    #saveStatus { font-size: 11.5px; color: var(--dim); margin-right: 8px; min-width: 124px; text-align: right; }
+    #saveStatus.unsaved { color: #d97706; }
+    #saveStatus.saved   { color: #16a34a; }
+
+    .btn {
+      font-family: inherit; font-size: 12.5px; font-weight: 500;
+      padding: 6px 14px; border-radius: 5px; cursor: pointer;
+      border: 1px solid transparent;
+      transition: background .12s, color .12s, border-color .12s;
+      white-space: nowrap;
+    }
+    .btn-primary { background: var(--text); color: #fff; border-color: var(--text); }
+    .btn-primary:hover { background: #333; border-color: #333; }
+    .btn-ghost   { background: transparent; color: var(--mid); border-color: #ccc; }
+    .btn-ghost:hover { background: var(--bg-soft); color: var(--text); }
+    .btn-danger  { color: #b91c1c; border-color: #fca5a5; }
+    .btn-danger:hover { background: #fef2f2; border-color: #f87171; }
+
+    /* ── Section nav ──────────────────────── */
+    #section-nav {
+      position: fixed; top: var(--bar-h); left: 0; right: 0;
+      height: var(--nav-h);
+      background: var(--bg); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 2px;
+      padding: 0 32px; z-index: 99;
+    }
+    #section-nav a {
+      font-size: 12.5px; font-weight: 500; color: var(--dim);
+      text-decoration: none; padding: 5px 11px; border-radius: 4px;
+      transition: background .12s, color .12s;
+    }
+    #section-nav a:hover { background: var(--bg-soft); color: var(--text); }
+    #section-nav a.active { background: var(--bg-soft); color: var(--text); font-weight: 600; }
+
+    /* ── Main ─────────────────────────────── */
+    main {
+      margin-top: calc(var(--bar-h) + var(--nav-h));
+      max-width: 1360px;
+      padding: 44px 32px 96px;
+    }
+
+    section.ws-section {
+      margin-bottom: 60px;
+      scroll-margin-top: calc(var(--bar-h) + var(--nav-h) + 20px);
+    }
+
+    /* ── Section header ───────────────────── */
+    .sec-header  { margin-bottom: 18px; }
+    .sec-label   { font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-bottom: 3px; }
+    .sec-title   { font-size: 17px; font-weight: 700; letter-spacing: -.025em; color: var(--text); margin-bottom: 3px; }
+    .sec-sub     { font-size: 12.5px; color: var(--dim); line-height: 1.5; }
+
+    /* ── Table ─────────────────────────────── */
+    .tbl-wrap {
+      width: 100%; overflow-x: auto;
+      border: 1px solid var(--border); border-radius: 6px;
+    }
+    table {
+      width: 100%; border-collapse: collapse; table-layout: fixed;
+    }
+
+    /* ── Column header row ────────────────── */
+    thead th {
+      padding: 9px 13px;
+      font-size: 10.5px; font-weight: 600; letter-spacing: .07em;
+      text-transform: uppercase; color: var(--dim);
+      background: var(--bg-soft); border-bottom: 1px solid var(--border);
+      text-align: left; white-space: nowrap;
+    }
+    /* color-coded header overrides */
+    thead th.col-old    { background: var(--old-bg);    color: var(--old-head);    }
+    thead th.col-new    { background: var(--new-bg);    color: var(--new-head);    }
+    thead th.col-strong { background: var(--strong-bg); color: var(--strong-head); }
+    thead th.col-weak   { background: var(--weak-bg);   color: var(--weak-head);   }
+    thead th.col-gap    { background: var(--gap-bg);    color: var(--gap-head);    }
+
+    /* row number column */
+    th.col-num, td.col-num {
+      width: 40px; min-width: 40px;
+      text-align: center;
+      color: var(--dim);
+      font-size: 11px;
+      user-select: none;
+    }
+    td.col-num {
+      padding: 0; vertical-align: middle;
+      border-right: 1px solid var(--border);
+      background: var(--bg-soft);
+      font-size: 11px; color: var(--dim);
+    }
+
+    /* action column */
+    th.action-col { width: 34px; min-width: 34px; }
+
+    /* ── Body rows ─────────────────────────── */
+    tbody tr { border-bottom: 1px solid var(--border); }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover td.col-num { background: #f0f0f0; }
+
+    tbody td {
+      padding: 0; vertical-align: top;
+      border-right: 1px solid var(--border);
+    }
+    tbody td:last-child { border-right: none; }
+
+    /* background colors applied to td */
+    tbody td.col-old    { background: var(--old-bg);    }
+    tbody td.col-new    { background: var(--new-bg);    }
+    tbody td.col-strong { background: var(--strong-bg); }
+    tbody td.col-weak   { background: var(--weak-bg);   }
+    tbody td.col-gap    { background: var(--gap-bg);    }
+
+    /* ── Textarea cells ───────────────────── */
+    .cell-ta {
+      width: 100%; border: none; background: transparent;
+      font-family: inherit; font-size: 13px; color: var(--text);
+      line-height: 1.58; resize: none; outline: none;
+      padding: 11px 13px; min-height: 42px;
+      overflow: hidden; display: block;
+    }
+    .cell-ta::placeholder { color: #d0d0d0; }
+    .cell-ta:focus { background: rgba(0,0,0,0.025); }
+
+    td:first-of-type .cell-ta { font-weight: 500; }
+
+    /* ── Action cell ──────────────────────── */
+    td.action-cell {
+      width: 34px; min-width: 34px;
+      text-align: center; vertical-align: middle; padding: 0;
+    }
+    .del-btn {
+      opacity: 0; background: none; border: none; cursor: pointer;
+      font-size: 15px; color: var(--dim);
+      width: 26px; height: 26px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity .12s, background .12s, color .12s; margin: auto;
+    }
+    tr:hover .del-btn { opacity: 1; }
+    .del-btn:hover { background: #fee2e2; color: #b91c1c; }
+
+    /* ── Add row ──────────────────────────── */
+    .add-row-btn {
+      margin-top: 8px; background: none;
+      border: 1px dashed #d0d0d0; border-radius: 5px;
+      font-family: inherit; font-size: 12.5px; color: var(--dim); font-weight: 500;
+      padding: 7px 16px; cursor: pointer; width: 100%; text-align: left;
+      transition: background .12s, color .12s, border-color .12s;
+    }
+    .add-row-btn:hover { background: var(--bg-soft); color: var(--text); border-color: #aaa; }
+
+    /* ── Legend strip (Section 2) ─────────── */
+    .legend {
+      display: flex; gap: 20px; margin-bottom: 12px;
+      font-size: 11.5px; color: var(--mid); align-items: center; flex-wrap: wrap;
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; }
+    .legend-dot {
+      width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0;
+    }
+
+    /* ── Column width presets ─────────────── */
+    /* Section 1 */
+    #table-baseline col.c0 { width: 38px; }
+    #table-baseline col.c1 { width: 14%; }
+    #table-baseline col.c2 { width: 18%; }
+    #table-baseline col.c3 { width: 22%; }
+    #table-baseline col.c4 { width: 26%; }
+    #table-baseline col.c5 { width: 17%; }
+
+    /* Section 2 */
+    #table-adaptive col.c0 { width: 38px; }
+    #table-adaptive col.c1 { width: 12%; }
+    #table-adaptive col.c2 { width: 15%; }
+    #table-adaptive col.c3 { width: 17%; }
+    #table-adaptive col.c4 { width: 22%; }
+    #table-adaptive col.c5 { width: 22%; }
+    #table-adaptive col.c6 { width: 10%; }
+
+    /* Section 3 */
+    #table-cases col.c0 { width: 38px; }
+    #table-cases col.c1 { width: 12%; }
+    #table-cases col.c2 { width: 16%; }
+    #table-cases col.c3 { width: 17%; }
+    #table-cases col.c4 { width: 17%; }
+    #table-cases col.c5 { width: 8%;  }
+    #table-cases col.c6 { width: 27%; }
+
+    /* Section 4 */
+    #table-criteria col.c0 { width: 38px; }
+    #table-criteria col.c1 { width: 20%; }
+    #table-criteria col.c2 { width: 77%; }
+  </style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<header id="topbar">
+  <div class="topbar-left">
+    <span class="page-title">Benchmark Maker</span>
+    <span class="page-sub">Old vs new input benchmark — Program Fit &amp; Financial Resources</span>
+  </div>
+  <div class="topbar-right">
+    <span id="saveStatus" class="saved">All changes saved</span>
+    <button class="btn btn-ghost" onclick="exportJSON()">Export JSON</button>
+    <button class="btn btn-ghost" onclick="exportCSV()">Export CSV</button>
+    <button class="btn btn-ghost btn-danger" onclick="resetAll()">Reset</button>
+    <button class="btn btn-primary" onclick="manualSave()">Save</button>
+  </div>
+</header>
+
+<!-- SECTION NAV -->
+<nav id="section-nav">
+  <a href="#s1">Baseline Benchmark</a>
+  <a href="#s2">Adaptive Improvement</a>
+  <a href="#s3">Benchmark Cases</a>
+  <a href="#s4">Evaluation Criteria</a>
+</nav>
+
+<main>
+
+  <!-- ── SECTION 1 ───────────────────────── -->
+  <section class="ws-section" id="s1">
+    <div class="sec-header">
+      <div class="sec-label">Section 1</div>
+      <h2 class="sec-title">Baseline Benchmark</h2>
+      <p class="sec-sub">What the current system asks, what it tries to learn, where it falls short, and which output it affects.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table id="table-baseline">
+        <colgroup>
+          <col class="c0"/><col class="c1"/><col class="c2"/>
+          <col class="c3"/><col class="c4"/><col class="c5"/>
+          <col class="action-col"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="col-num">#</th>
+            <th>Area</th>
+            <th>What they ask today</th>
+            <th>What they are trying to learn</th>
+            <th class="col-gap">Current weakness</th>
+            <th>Output it affects</th>
+            <th class="action-col"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" onclick="addRow('baseline')">+ Add row</button>
+  </section>
+
+  <!-- ── SECTION 2 ───────────────────────── -->
+  <section class="ws-section" id="s2">
+    <div class="sec-header">
+      <div class="sec-label">Section 2</div>
+      <h2 class="sec-title">Adaptive Improvement</h2>
+      <p class="sec-sub">Side-by-side: old question vs. new adaptive version, with strong and weak answer examples per item.</p>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--old-bg);border:1px solid #d0cfc8;"></div> Old system</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--new-bg);border:1px solid #bae0f5;"></div> New adaptive</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--strong-bg);border:1px solid #bbf7d0;"></div> Strong answer</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--weak-bg);border:1px solid #fed7aa;"></div> Weak answer</div>
+    </div>
+    <div class="tbl-wrap">
+      <table id="table-adaptive">
+        <colgroup>
+          <col class="c0"/><col class="c1"/><col class="c2"/>
+          <col class="c3"/><col class="c4"/><col class="c5"/>
+          <col class="c6"/><col class="action-col"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="col-num">#</th>
+            <th>Test item</th>
+            <th class="col-old">Old system question</th>
+            <th class="col-new">New adaptive version</th>
+            <th class="col-strong">Strong answer</th>
+            <th class="col-weak">Weak answer</th>
+            <th>Score bucket</th>
+            <th class="action-col"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" onclick="addRow('adaptive')">+ Add row</button>
+  </section>
+
+  <!-- ── SECTION 3 ───────────────────────── -->
+  <section class="ws-section" id="s3">
+    <div class="sec-header">
+      <div class="sec-label">Section 3</div>
+      <h2 class="sec-title">Benchmark Cases</h2>
+      <p class="sec-sub">Applicant archetypes used to validate whether the new adaptive prompts actually perform better.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table id="table-cases">
+        <colgroup>
+          <col class="c0"/><col class="c1"/><col class="c2"/>
+          <col class="c3"/><col class="c4"/><col class="c5"/>
+          <col class="c6"/><col class="action-col"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="col-num">#</th>
+            <th>Benchmark case</th>
+            <th>Goal</th>
+            <th class="col-old">Old prompt result</th>
+            <th class="col-new">New prompt result</th>
+            <th>Better?</th>
+            <th>Notes</th>
+            <th class="action-col"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" onclick="addRow('cases')">+ Add row</button>
+  </section>
+
+  <!-- ── SECTION 4 ───────────────────────── -->
+  <section class="ws-section" id="s4">
+    <div class="sec-header">
+      <div class="sec-label">Section 4</div>
+      <h2 class="sec-title">Evaluation Criteria</h2>
+      <p class="sec-sub">Standards used to judge whether the new adaptive version is a genuine improvement.</p>
+    </div>
+    <div class="tbl-wrap">
+      <table id="table-criteria">
+        <colgroup>
+          <col class="c0"/><col class="c1"/><col class="c2"/>
+          <col class="action-col"/>
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="col-num">#</th>
+            <th>Criterion</th>
+            <th>Notes</th>
+            <th class="action-col"></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <button class="add-row-btn" onclick="addRow('criteria')">+ Add row</button>
+  </section>
+
+</main>
+
+<script>
+// ─────────────────────────────────────────────────────
+//  SECTION DEFINITIONS
+// ─────────────────────────────────────────────────────
+
+const STORAGE_KEY = 'benchmark_maker_v1';
+
+// colClass: CSS class applied to both <th> and <td> for color coding
+const SECTIONS = {
+  baseline: {
+    cols: [
+      { key: 'area',     label: 'Area' },
+      { key: 'asks',     label: 'What they ask today' },
+      { key: 'learn',    label: 'What they are trying to learn' },
+      { key: 'weakness', label: 'Current weakness',   colClass: 'col-gap' },
+      { key: 'output',   label: 'Output it affects' },
+    ],
+    defaults: [
+      { area: 'Program understanding',  asks: '"Why this program?"',                     learn: 'Does the applicant genuinely understand the program',             weakness: 'Easy to memorize a convincing answer with zero research',                       output: 'Program Fit score' },
+      { area: 'Motivation',             asks: '"Tell me about yourself"',                learn: 'Is the motivation real and not rehearsed',                      weakness: 'Generic passion answers, no way to tell real from rehearsed',                  output: 'Program Fit score' },
+      { area: 'Education relevance',    asks: 'Resume review',                           learn: 'Is the education aligned with program requirements',             weakness: 'No probing for gaps or misalignment',                                          output: 'Education Fit score' },
+      { area: 'Work relevance',         asks: 'Resume review',                           learn: 'Is prior work relevant to the program field',                   weakness: 'Task lists hide actual output quality and relevance',                          output: 'Industry Experience score' },
+      { area: 'Work quality',           asks: 'Short explanation of role',               learn: 'What was the real quality of work done',                        weakness: 'No follow-up on actual responsibilities or outcomes',                          output: 'Industry Experience score' },
+      { area: 'Paid vs volunteer',      asks: 'Resume as listed',                        learn: 'Was the work paid employment or volunteer',                     weakness: 'Volunteer work passes as paid experience without challenge',                   output: 'Job Readiness score' },
+      { area: 'Part time vs full time', asks: 'Resume as listed',                        learn: 'Was the commitment full or part time',                          weakness: 'Part-time looks identical to full-time on a resume',                          output: 'Job Readiness score' },
+      { area: 'Assets',                 asks: 'Questionnaire + self-reported figures',   learn: 'Does the applicant have sufficient assets',                     weakness: 'Vague self-reported figures accepted without verification',                    output: 'Financial Resources score' },
+      { area: 'Debt',                   asks: 'Questionnaire + self-reported figures',   learn: 'What is the real level of existing debt',                       weakness: '"Family will help" hides actual debt obligations',                             output: 'Financial Resources score' },
+      { area: 'Cash collateral source', asks: 'One explanation question',                learn: 'Is the collateral a gift or a loan',                            weakness: 'Gift vs. loan left unclassified — major scoring gap',                         output: 'Financial Resources score' },
+      { area: 'Monthly payment plan',   asks: '"How will you pay each month?"',          learn: 'Does the applicant have a realistic repayment plan',             weakness: '"I\'ll work part-time" accepted with no math or stress test',                 output: 'Financial Resources score' },
+      { area: 'Income stability',       asks: 'Resume + one explanation',                learn: 'Is the income source stable and reliable',                      weakness: 'No scenario or stress test asked',                                             output: 'Financial Resources score' },
+      { area: 'Relocation risk',        asks: 'Application form',                        learn: 'Will the applicant follow through after relocating',             weakness: 'Canadian vs. back-home asset split never assessed',                           output: 'Financial Resources score' },
+      { area: 'Contradictions',         asks: 'Manual post-interview review',            learn: 'Are answers internally consistent across the interview',         weakness: 'Contradictions get missed — no live cross-check mechanism',                   output: 'All scores' },
+    ]
+  },
+  adaptive: {
+    cols: [
+      { key: 'item',   label: 'Test item' },
+      { key: 'oldQ',   label: 'Old system question',       colClass: 'col-old' },
+      { key: 'newQ',   label: 'New adaptive version',      colClass: 'col-new' },
+      { key: 'strong', label: 'Strong answer',             colClass: 'col-strong' },
+      { key: 'weak',   label: 'Weak answer',               colClass: 'col-weak' },
+      { key: 'bucket', label: 'Score bucket' },
+    ],
+    defaults: [
+      { item: 'Program understanding', oldQ: '"Why do you want this program?"',                                                   newQ: '"What does your first 6 months in the program look like in detail?"',         strong: 'Specific milestones, named courses or steps, realistic timeline with concrete detail',                       weak: '"I want to grow and learn new skills in this field."',                                                     bucket: 'Program Fit' },
+      { item: 'Motivation',            oldQ: '"Tell me about yourself"',                                                          newQ: '"Give me one real moment that led you to this decision."',                    strong: 'Specific incident, named people or challenge, clear turning point that explains the choice',                weak: '"I\'ve always been passionate about this field."',                                                         bucket: 'Program Fit' },
+      { item: 'Work quality',          oldQ: 'Resume review + job title',                                                         newQ: '"Walk me through the hardest challenge you solved in that role."',            strong: 'Specific problem named, actions taken in sequence, measurable or observable outcome',                        weak: '"I worked with a great team on various projects and always met our goals."',                               bucket: 'Job Readiness / Industry Experience' },
+      { item: 'Collateral source',     oldQ: '"Where is the money coming from?"',                                                 newQ: '"Is this a gift or a loan? If a loan, what are the repayment terms?"',       strong: 'Clear classification (gift or loan), named source, confirmed availability and timeline',                    weak: '"My family will support me through the program."',                                                         bucket: 'Financial Resources' },
+      { item: 'Repayment plan',        oldQ: '"How will you pay each month?"',                                                    newQ: '"What if your job stops 2 months in? Walk me through month 3 financially."', strong: 'Named backup plan, specific dollar amounts, realistic contingency not relying on assumptions',               weak: '"I\'ll find another job. There are always opportunities in Canada."',                                      bucket: 'Financial Resources' },
+    ]
+  },
+  cases: {
+    cols: [
+      { key: 'name',      label: 'Benchmark case' },
+      { key: 'goal',      label: 'Goal' },
+      { key: 'oldResult', label: 'Old prompt result',  colClass: 'col-old' },
+      { key: 'newResult', label: 'New prompt result',  colClass: 'col-new' },
+      { key: 'better',    label: 'Better?' },
+      { key: 'notes',     label: 'Notes' },
+    ],
+    defaults: [
+      { name: 'Strong applicant',           goal: 'Confirm new prompts do not penalize genuinely strong, real answers',   oldResult: 'Gives a solid general answer about motivation and goals — passes easily',                        newResult: 'Names a specific turning point, provides a 6-month plan with real detail — scores higher',    better: 'Yes', notes: 'New prompt rewards actual depth over polished delivery' },
+      { name: 'Weak applicant',             goal: 'Confirm new prompts surface weakness the old prompts missed',          oldResult: 'Gives a rehearsed answer that sounds decent — passes interview',                                newResult: 'Fails to answer the scenario question, defaults to vague language — score drops',              better: 'Yes', notes: 'Weakness now visible under adaptive questioning' },
+      { name: 'Contradictory applicant',    goal: 'Confirm contradiction detection works in real time',                   oldResult: 'Contradiction spotted only in post-interview review, or missed entirely',                        newResult: 'Adaptive follow-up catches the contradiction live — officer can clarify on the spot',          better: 'Yes', notes: 'Needs real-world testing to confirm reliability' },
+      { name: 'Generic talker',             goal: 'Confirm forced specificity blocks rehearsed generic answers',          oldResult: 'Generic answer about passion and growth accepted without pushback',                              newResult: 'Cannot answer "one real moment" specifically — score drops',                                  better: 'Yes', notes: 'Forced specificity is the key differentiator' },
+      { name: 'Financially vague applicant',goal: 'Confirm gift/loan classification resolves the biggest FR gap',         oldResult: '"Family will help" accepted as sufficient — Financial Resources scored loosely',                  newResult: 'Forced to classify: gift or loan, amount, repayment terms — vagueness penalized',              better: 'Yes', notes: 'Highest-impact improvement in Financial Resources scoring' },
+    ]
+  },
+  criteria: {
+    cols: [
+      { key: 'criterion', label: 'Criterion' },
+      { key: 'notes',     label: 'Notes' },
+    ],
+    defaults: [
+      { criterion: 'Depth',        notes: 'Does the new question produce more specific, layered responses than the old one?' },
+      { criterion: 'Clarity',      notes: 'Is the new question easy for applicants to understand without coaching or clarification?' },
+      { criterion: 'Hard to game', notes: 'Can a rehearsed applicant still score well by giving generic answers?' },
+      { criterion: 'Same output',  notes: 'Does changing the question preserve the same scoring output structure and buckets as before?' },
+    ]
+  }
+};
+
+// ─────────────────────────────────────────────────────
+//  STATE + INIT
+// ─────────────────────────────────────────────────────
+
+let data = {};
+let saveTimer = null;
+
+function init() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  if (stored) {
+    try { data = JSON.parse(stored); }
+    catch(e) { data = buildDefaults(); }
+  } else {
+    data = buildDefaults();
+  }
+  Object.keys(SECTIONS).forEach(renderSection);
+  initNavSpy();
+}
+
+function buildDefaults() {
+  const d = {};
+  Object.keys(SECTIONS).forEach(k => {
+    d[k] = SECTIONS[k].defaults.map(r => ({ ...r }));
+  });
+  return d;
+}
+
+// ─────────────────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────────────────
+
+function renderSection(sKey) {
+  const tbody = document.querySelector(`#table-${sKey} tbody`);
+  tbody.innerHTML = '';
+  (data[sKey] || []).forEach((row, ri) => tbody.appendChild(buildRow(sKey, row, ri)));
+  requestAnimationFrame(() => {
+    document.querySelectorAll(`#table-${sKey} .cell-ta`).forEach(resizeTa);
+  });
+}
+
+function buildRow(sKey, rowData, ri) {
+  const section = SECTIONS[sKey];
+  const tr = document.createElement('tr');
+
+  // Row number cell
+  const numTd = document.createElement('td');
+  numTd.className = 'col-num';
+  numTd.textContent = ri + 1;
+  tr.appendChild(numTd);
+
+  // Data cells
+  section.cols.forEach(col => {
+    const td = document.createElement('td');
+    if (col.colClass) td.classList.add(col.colClass);
+
+    const ta = document.createElement('textarea');
+    ta.className = 'cell-ta';
+    ta.value = rowData[col.key] || '';
+    ta.placeholder = col.label;
+    ta.rows = 1;
+    ta.dataset.section = sKey;
+    ta.dataset.ri = ri;
+    ta.dataset.col = col.key;
+    ta.addEventListener('input', onInput);
+
+    td.appendChild(ta);
+    tr.appendChild(td);
+  });
+
+  // Delete button
+  const actionTd = document.createElement('td');
+  actionTd.className = 'action-cell';
+  const delBtn = document.createElement('button');
+  delBtn.className = 'del-btn';
+  delBtn.innerHTML = '&times;';
+  delBtn.title = 'Delete row';
+  delBtn.addEventListener('click', () => deleteRow(sKey, ri));
+  actionTd.appendChild(delBtn);
+  tr.appendChild(actionTd);
+
+  return tr;
+}
+
+// ─────────────────────────────────────────────────────
+//  INPUT + RESIZE
+// ─────────────────────────────────────────────────────
+
+function resizeTa(ta) {
+  ta.style.height = 'auto';
+  ta.style.height = ta.scrollHeight + 'px';
+}
+
+function onInput(e) {
+  const ta = e.target;
+  resizeTa(ta);
+  const { section, col } = ta.dataset;
+  const ri = parseInt(ta.dataset.ri);
+  if (!data[section]) data[section] = [];
+  if (data[section][ri]) data[section][ri][col] = ta.value;
+  scheduleSave();
+}
+
+// ─────────────────────────────────────────────────────
+//  ROW OPERATIONS
+// ─────────────────────────────────────────────────────
+
+function addRow(sKey) {
+  const newRow = {};
+  SECTIONS[sKey].cols.forEach(col => newRow[col.key] = '');
+  data[sKey].push(newRow);
+  const ri = data[sKey].length - 1;
+  const tbody = document.querySelector(`#table-${sKey} tbody`);
+  const tr = buildRow(sKey, newRow, ri);
+  tbody.appendChild(tr);
+  const firstTa = tr.querySelector('.cell-ta');
+  if (firstTa) { firstTa.focus(); resizeTa(firstTa); }
+  scheduleSave();
+}
+
+function deleteRow(sKey, ri) {
+  if (data[sKey].length <= 1 && !confirm('Delete the last row?')) return;
+  data[sKey].splice(ri, 1);
+  renderSection(sKey);
+  scheduleSave();
+}
+
+// ─────────────────────────────────────────────────────
+//  SAVE
+// ─────────────────────────────────────────────────────
+
+function scheduleSave() {
+  clearTimeout(saveTimer);
+  setSaveStatus('unsaved', 'Unsaved changes');
+  saveTimer = setTimeout(saveToStorage, 900);
+}
+
+function saveToStorage() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  setSaveStatus('saved', 'All changes saved');
+}
+
+function manualSave() {
+  clearTimeout(saveTimer);
+  saveToStorage();
+  const btn = document.querySelector('.btn-primary');
+  const orig = btn.textContent;
+  btn.textContent = 'Saved ✓';
+  setTimeout(() => btn.textContent = orig, 1400);
+}
+
+function setSaveStatus(cls, msg) {
+  const el = document.getElementById('saveStatus');
+  el.className = cls;
+  el.textContent = msg;
+}
+
+// ─────────────────────────────────────────────────────
+//  EXPORT
+// ─────────────────────────────────────────────────────
+
+function exportJSON() {
+  const payload = {
+    exported: new Date().toISOString(),
+    sections: {}
+  };
+  Object.keys(SECTIONS).forEach(k => {
+    payload.sections[k] = {
+      columns: SECTIONS[k].cols.map(c => c.label),
+      rows: data[k]
+    };
+  });
+  download('benchmark_maker.json', JSON.stringify(payload, null, 2), 'application/json');
+}
+
+function exportCSV() {
+  let out = '';
+  Object.keys(SECTIONS).forEach(sKey => {
+    const sec = SECTIONS[sKey];
+    out += sec.cols.map(c => `"${c.label}"`).join(',') + '\n';
+    (data[sKey] || []).forEach(row => {
+      out += sec.cols.map(c => `"${(row[c.key] || '').replace(/"/g, '""')}"`).join(',') + '\n';
+    });
+    out += '\n';
+  });
+  download('benchmark_maker.csv', out.trimEnd(), 'text/csv;charset=utf-8;');
+}
+
+function download(filename, content, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
+// ─────────────────────────────────────────────────────
+//  RESET
+// ─────────────────────────────────────────────────────
+
+function resetAll() {
+  if (!confirm('Reset all data to defaults? This will clear everything you have entered and cannot be undone.')) return;
+  data = buildDefaults();
+  localStorage.removeItem(STORAGE_KEY);
+  Object.keys(SECTIONS).forEach(renderSection);
+  setSaveStatus('saved', 'Reset to defaults');
+}
+
+// ─────────────────────────────────────────────────────
+//  NAV SPY
+// ─────────────────────────────────────────────────────
+
+function initNavSpy() {
+  const sections = document.querySelectorAll('.ws-section');
+  const links = document.querySelectorAll('#section-nav a');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        links.forEach(a => a.classList.remove('active'));
+        const link = document.querySelector(`#section-nav a[href="#${e.target.id}"]`);
+        if (link) link.classList.add('active');
+      }
+    });
+  }, { rootMargin: `-${56 + 40 + 20}px 0px -60% 0px`, threshold: 0 });
+  sections.forEach(s => obs.observe(s));
+}
+
+// ─────────────────────────────────────────────────────
+//  BOOT
+// ─────────────────────────────────────────────────────
+
+window.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

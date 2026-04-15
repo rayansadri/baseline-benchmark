@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Financial Resources & Program Fit — Underwriting</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --text:         #202122;
+      --text-light:   #54595d;
+      --link:         #3366cc;
+      --border:       #a2a9b1;
+      --border-light: #c8ccd1;
+      --bg:           #ffffff;
+      --bg-soft:      #f8f9fa;
+      --bg-warn:      #fef9e7;
+      --bg-note:      #eaf3fb;
+      --accent-warn:  #e68a00;
+      --accent-note:  #3366cc;
+      --sidebar-w:    200px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, 'Linux Libertine', Georgia, Times, serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    .page {
+      display: flex;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    /* ── Sidebar ─────────────────────────── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      padding: 20px 0 40px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      font-family: -apple-system, Arial, sans-serif;
+    }
+
+    .toc-box {
+      border: 1px solid var(--border);
+      background: var(--bg-soft);
+      padding: 12px 14px;
+    }
+
+    .toc-title { font-size: 12.5px; font-weight: bold; margin-bottom: 8px; }
+
+    .toc-list { list-style: none; padding: 0; }
+    .toc-list li { margin-bottom: 4px; }
+    .toc-list a { color: var(--link); text-decoration: none; font-size: 12.5px; line-height: 1.45; display: block; }
+    .toc-list a:hover { text-decoration: underline; }
+    .toc-list a.active { font-weight: bold; }
+    .toc-num { color: var(--text-light); margin-right: 4px; font-size: 11.5px; }
+
+    .toc-sub { padding-left: 14px; margin-top: 3px; }
+    .toc-sub a { font-size: 12px; color: var(--text-light); }
+
+    .back-link {
+      display: block;
+      font-size: 12px;
+      color: var(--link);
+      font-family: Arial, sans-serif;
+      margin-bottom: 14px;
+      text-decoration: none;
+    }
+    .back-link:hover { text-decoration: underline; }
+
+    /* ── Main ────────────────────────────── */
+    .content {
+      flex: 1;
+      min-width: 0;
+      padding: 24px 36px 80px 32px;
+      border-left: 1px solid var(--border-light);
+    }
+
+    .page-title {
+      font-family: 'Linux Libertine', Georgia, Times, serif;
+      font-size: 26px;
+      font-weight: normal;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 4px;
+      margin-bottom: 4px;
+    }
+
+    .page-subtitle {
+      font-size: 12.5px;
+      color: var(--text-light);
+      margin-bottom: 24px;
+      font-family: Arial, sans-serif;
+    }
+
+    .section { margin-bottom: 32px; }
+
+    .section-heading {
+      font-family: 'Linux Libertine', Georgia, Times, serif;
+      font-size: 22px;
+      font-weight: normal;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 3px;
+      margin-bottom: 12px;
+      margin-top: 32px;
+    }
+
+    .subsection-heading {
+      font-family: Arial, sans-serif;
+      font-size: 15px;
+      font-weight: bold;
+      margin: 18px 0 8px;
+    }
+
+    .sub2-heading {
+      font-family: Arial, sans-serif;
+      font-size: 13.5px;
+      font-weight: bold;
+      margin: 14px 0 6px;
+    }
+
+    p { margin-bottom: 10px; font-size: 14px; line-height: 1.65; }
+    ul, ol { padding-left: 24px; margin-bottom: 10px; }
+    li { font-size: 14px; line-height: 1.6; margin-bottom: 3px; }
+    strong { font-weight: bold; }
+
+    code {
+      font-family: 'Courier New', monospace;
+      font-size: 12.5px;
+      background: var(--bg-soft);
+      border: 1px solid var(--border-light);
+      padding: 0 3px;
+      border-radius: 2px;
+    }
+
+    /* ── Tables ──────────────────────────── */
+    table { border-collapse: collapse; width: 100%; margin: 12px 0; font-size: 13.5px; font-family: Arial, sans-serif; }
+    th { background: var(--bg-soft); border: 1px solid var(--border); padding: 7px 10px; text-align: left; font-size: 12.5px; font-weight: bold; }
+    td { border: 1px solid var(--border); padding: 7px 10px; vertical-align: top; line-height: 1.5; }
+    tr:nth-child(even) td { background: #f9fafb; }
+
+    .score-cell { font-family: 'Courier New', monospace; font-weight: bold; text-align: center; width: 44px; }
+    .s5 { background: #d4edda; color: #155724; }
+    .s4 { background: #d1ece5; color: #0b4f3a; }
+    .s3 { background: #fff3cd; color: #856404; }
+    .s2 { background: #ffe5cc; color: #7c4008; }
+    .s1 { background: #f8d7da; color: #721c24; }
+    .s0 { background: var(--bg-soft); color: var(--text-light); }
+
+    /* ── Notice boxes ────────────────────── */
+    .notice {
+      border: 1px solid;
+      padding: 10px 14px;
+      margin: 12px 0;
+      font-size: 13px;
+      font-family: Arial, sans-serif;
+      line-height: 1.55;
+    }
+    .notice-note  { background: var(--bg-note); border-color: #36c; }
+    .notice-warn  { background: var(--bg-warn); border-color: var(--accent-warn); }
+    .notice-label { font-weight: bold; display: block; margin-bottom: 3px; }
+    .notice-note .notice-label { color: var(--accent-note); }
+    .notice-warn .notice-label { color: var(--accent-warn); }
+
+    /* ── Formula ─────────────────────────── */
+    .formula {
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--border);
+      padding: 10px 14px;
+      margin: 10px 0;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* ── Branch toggle ───────────────────── */
+    .branch-toggle {
+      display: flex;
+      border: 1px solid var(--border);
+      width: fit-content;
+      margin-bottom: 10px;
+      font-family: Arial, sans-serif;
+    }
+    .branch-btn {
+      padding: 5px 14px;
+      font-size: 12.5px;
+      cursor: pointer;
+      background: var(--bg-soft);
+      color: var(--text-light);
+      border: none;
+      border-right: 1px solid var(--border);
+      font-family: inherit;
+    }
+    .branch-btn:last-child { border-right: none; }
+    .branch-btn.on { background: var(--bg); color: var(--text); font-weight: bold; }
+
+    .branch-panel { display: none; }
+    .branch-panel.on { display: block; }
+
+    /* ── Two col ─────────────────────────── */
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 10px 0; }
+    .col-box { border: 1px solid var(--border); padding: 10px 12px; background: var(--bg-soft); font-size: 13px; font-family: Arial, sans-serif; }
+    .col-box-title { font-weight: bold; margin-bottom: 6px; font-size: 12.5px; }
+
+    /* ── Divider between sections ────────── */
+    .section-divider {
+      border: none;
+      border-top: 2px solid var(--border);
+      margin: 40px 0 0;
+    }
+
+    .muted { font-size: 12.5px; color: var(--text-light); font-style: italic; font-family: Arial, sans-serif; }
+
+    @media (max-width: 720px) {
+      .page { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: static; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+      .content { border-left: none; padding: 16px; }
+      .two-col { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <a class="back-link" href="index.html">← Full baseline</a>
+    <nav class="toc-box">
+      <div class="toc-title">Contents</div>
+      <ul class="toc-list">
+        <li>
+          <a href="#program-fit"><span class="toc-num">1</span>Program Fit</a>
+        </li>
+        <li>
+          <a href="#financial-resources"><span class="toc-num">2</span>Financial Resources</a>
+          <ul class="toc-sub toc-list">
+            <li><a href="#fr-assets">2.1 Assets</a></li>
+            <li><a href="#fr-collateral">2.2 Cash Collateral</a></li>
+            <li><a href="#fr-debt">2.3 Debt</a></li>
+            <li><a href="#fr-income">2.4 Income (Onshore)</a></li>
+            <li><a href="#fr-scoring">2.5 Scoring</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main -->
+  <main class="content">
+
+    <h1 class="page-title">Program Fit &amp; Financial Resources</h1>
+    <p class="page-subtitle">Working view — two traits only. <a href="index.html">Back to full baseline →</a></p>
+
+    <!-- ── 1. Program Fit ─────────────────────────────────────── -->
+    <div class="section" id="program-fit">
+      <h2 class="section-heading">1. Program Fit</h2>
+      <p>Assesses how well the applicant's background — work history, education, and stated goals —
+      aligns with the specific program they have applied to.</p>
+
+      <div class="notice notice-warn">
+        <span class="notice-label">External dependency — rubric not inline</span>
+        The Program Fit rubric is not hardcoded in this baseline. It is injected at runtime via
+        <code>{% reference program_fit %}</code>. The content varies per program and must be supplied
+        by the system before assessment begins. If this reference is empty or fails to resolve,
+        score Program Fit as <code>N/A</code> and request the program rubric under Extra Documents.
+      </div>
+
+      <h3 class="subsection-heading">What to assess</h3>
+      <p>Despite the external rubric, the assessment approach follows the same pattern as all other
+      scored categories. Use the injected rubric to evaluate:</p>
+      <ul>
+        <li>Whether prior work experience aligns with the program's typical applicant profile</li>
+        <li>Whether the applicant's education provides relevant foundational knowledge</li>
+        <li>Whether the stated motivation is consistent with what the program actually offers</li>
+        <li>Whether the applicant's career goals are achievable via this specific program</li>
+      </ul>
+
+      <h3 class="subsection-heading">Output format</h3>
+      <p>Score on a <strong>1–5 scale</strong> using the injected rubric criteria. Format:</p>
+      <div class="formula">
+        Program Fit (4): The applicant's three years in healthcare administration directly maps to
+        the program's core intake profile. Minor gap in technical certification requirements.
+      </div>
+
+      <div class="notice notice-note">
+        <span class="notice-label">If rubric is unavailable</span>
+        Mark as <code>N/A</code>. In the written note, state: "Program Fit rubric was not available
+        at time of assessment. Score cannot be assigned." Add the rubric to document_requests.
+      </div>
+    </div>
+
+    <hr class="section-divider" />
+
+    <!-- ── 2. Financial Resources ─────────────────────────────── -->
+    <div class="section" id="financial-resources">
+      <h2 class="section-heading">2. Financial Resources</h2>
+      <p>Assesses the applicant's complete financial picture: assets, debt, and cash collateral sourcing.
+      Logic expands for <code>onshore-auto</code> applicants who have Canadian financial data available.</p>
+
+      <div class="branch-toggle">
+        <button class="branch-btn on" onclick="toggle('fr','onshore',this)">Onshore Auto</button>
+        <button class="branch-btn" onclick="toggle('fr','standard',this)">Standard (Offshore)</button>
+      </div>
+
+      <div class="branch-panel on" id="fr-onshore">
+        <div class="notice notice-note">
+          <span class="notice-label">Onshore Auto — additional data available</span>
+          The following Canadian data may be available and should be incorporated:
+          monthly employment income, rent and living expenses, verified Canadian bank balances,
+          and a Canadian credit report (utilization + repayment history).
+          Canadian-based assets carry more weight than assets back home.
+        </div>
+      </div>
+
+      <div class="branch-panel" id="fr-standard">
+        <div class="notice notice-note">
+          <span class="notice-label">Standard — offshore applicants</span>
+          Assets and debt assessed from loan questionnaire and interview transcript only.
+          No Canadian financial records available. Income statement section does not apply.
+        </div>
+      </div>
+
+      <!-- 2.1 Assets -->
+      <h3 class="subsection-heading" id="fr-assets">2.1 Assets</h3>
+      <p><strong>Cross-verification first.</strong> Compare declared assets in the questionnaire
+      against the interview transcript. Place discrepancies side-by-side.</p>
+      <p>Example: <em>"Mentioned CAD 14,000 in savings in the questionnaire but said CAD 17,000
+      in the interview transcript."</em></p>
+
+      <div class="two-col" style="margin-top:12px;">
+        <div class="col-box">
+          <div class="col-box-title">Assets in Canada — higher weight</div>
+          <ul>
+            <li>Canadian savings (with account verification if available)</li>
+            <li>Car registered in Canada</li>
+            <li>Other liquid assets — GICs, chequing accounts</li>
+          </ul>
+          <p class="muted" style="margin-top:6px;">For onshore applicants, these are prioritized over assets back home.</p>
+        </div>
+        <div class="col-box" style="border-color:var(--border-light);">
+          <div class="col-box-title">Assets back home — lower weight</div>
+          <ul>
+            <li>Savings</li>
+            <li>Land</li>
+            <li>Car</li>
+            <li>House</li>
+            <li>Other assets (investments, businesses)</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="formula">
+        Liquidity order (highest → lowest):<br>
+        Savings → Car → Land → House → Other Assets
+      </div>
+
+      <!-- 2.2 Cash Collateral -->
+      <h3 class="subsection-heading" id="fr-collateral">2.2 Source of Cash Collateral</h3>
+      <p>Cash collateral is the upfront amount the student provides to secure the loan —
+      typically <strong>CAD 4,500 to CAD 18,000</strong>. How it is sourced materially affects
+      the total asset and debt picture.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Source type</th>
+            <th>Effect on assets</th>
+            <th>Effect on debt</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Gift</strong> from friends or family</td>
+            <td>+Added as additional asset</td>
+            <td>No change</td>
+          </tr>
+          <tr>
+            <td><strong>Loan</strong> from friends, family, or lender</td>
+            <td>No change</td>
+            <td>+Added to total debt</td>
+          </tr>
+          <tr>
+            <td><strong>Asset sale</strong> (liquidation)</td>
+            <td>Shifts illiquid → liquid; no net change</td>
+            <td>No change</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="formula">
+        Total Assets = Reported Assets + Gift Collateral (if gifted)<br>
+        Total Debt   = Reported Debt   + Loan Collateral (if borrowed)
+      </div>
+
+      <!-- 2.3 Debt -->
+      <h3 class="subsection-heading" id="fr-debt">2.3 Debt Evaluation</h3>
+      <p><strong>Cross-verification first.</strong> Compare questionnaire, interview transcript, and
+      credit report (onshore only) side-by-side.</p>
+      <p>Example: <em>"Mentioned CAD 4,000 in debt in the questionnaire but credit report shows
+      CAD 6,200 total balance."</em></p>
+
+      <table>
+        <thead><tr><th>Factor</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Lender type</strong></td><td>Soft (family/friends) vs. Hard (bank/institution)</td></tr>
+          <tr><td><strong>Loan amount</strong></td><td>All debts combined, including cash collateral loan</td></tr>
+          <tr><td><strong>Monthly repayment</strong></td><td>Current payment obligation</td></tr>
+          <tr><td><strong>Repayment duration</strong></td><td>How long the obligation lasts</td></tr>
+          <tr><td><strong>Credit utilization rate</strong></td><td>From credit report — onshore only</td></tr>
+          <tr><td><strong>Repayment history</strong></td><td>Missed or late payments — onshore only</td></tr>
+        </tbody>
+      </table>
+
+      <div class="notice notice-warn">
+        <span class="notice-label">High-priority flag</span>
+        Debt value mismatches between the questionnaire and interview transcript are
+        <strong>high importance discrepancies</strong>. Always escalate. Do not treat them as minor.
+      </div>
+
+      <!-- 2.4 Income (Onshore only) -->
+      <h3 class="subsection-heading" id="fr-income">2.4 Income Statement <span class="muted" style="font-style:normal;">(Onshore Auto only)</span></h3>
+      <p>Evaluate the student's short-term cash flow by analyzing current income and monthly expenses.</p>
+
+      <table>
+        <thead><tr><th>Factor</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>Employment status</strong></td>
+            <td>Employed or not. If earning &gt;CAD 1,000/month and job appears serious → treat as stable income.</td>
+          </tr>
+          <tr>
+            <td><strong>Monthly income</strong></td>
+            <td>Exact figure. Flag if discrepancy between questionnaire and interview.</td>
+          </tr>
+          <tr>
+            <td><strong>Relocation risk</strong></td>
+            <td>If the job is in a different city from the school, the student may lose income when repayment starts.</td>
+          </tr>
+          <tr>
+            <td><strong>Rent</strong></td>
+            <td>Current monthly rent</td>
+          </tr>
+          <tr>
+            <td><strong>Other expenses</strong></td>
+            <td>Utilities, food, transportation, etc.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 2.5 Full Picture Scoring -->
+      <h3 class="subsection-heading" id="fr-scoring">2.5 Full Financial Picture — Scoring Guidance</h3>
+      <p>The final Financial Resources score accounts for all of the above together.
+      Score on a <strong>1–5 scale</strong>.</p>
+
+      <table>
+        <thead><tr><th style="width:44px;">Score</th><th>Profile</th></tr></thead>
+        <tbody>
+          <tr>
+            <td class="score-cell s5">5</td>
+            <td>Strong liquid assets (verified Canadian savings), low or no debt, collateral sourced via gift or own savings, stable income well above expenses (onshore).</td>
+          </tr>
+          <tr>
+            <td class="score-cell s4">4</td>
+            <td>Decent assets with minor debt. Collateral source is clear. Income covers expenses with some margin (onshore).</td>
+          </tr>
+          <tr>
+            <td class="score-cell s3">3</td>
+            <td>Moderate assets but some debt. Collateral partially borrowed. Income roughly meets expenses. Verifiability concerns present.</td>
+          </tr>
+          <tr>
+            <td class="score-cell s2">2</td>
+            <td>Low liquid assets, significant debt, collateral fully borrowed, or income falls short of expenses.</td>
+          </tr>
+          <tr>
+            <td class="score-cell s1">1</td>
+            <td>Very weak financial position. Assets are minimal or unverifiable, heavy debt load, no clear collateral plan, or major discrepancies across sources.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Key weighting principles:</p>
+      <ul>
+        <li>Liquidity and accessibility of Canadian-based assets carry the most weight (onshore)</li>
+        <li>Debt structure and repayment behavior is weighted higher than raw asset size</li>
+        <li>Unverifiable or inconsistent figures should push the score down</li>
+        <li>A gifted collateral is a positive signal; borrowed collateral is a risk factor</li>
+      </ul>
+
+      <div class="notice notice-note">
+        <span class="notice-label">Output format</span>
+        Financial Resources (3): Applicant reports CAD 8,000 in savings (questionnaire) vs. CAD 10,000
+        (interview) — minor discrepancy. Collateral of CAD 6,000 is a soft loan from parents, increasing
+        total debt to CAD 6,000. No Canadian credit history. Income of CAD 1,200/month is slightly above
+        expenses, but relocation to Toronto for school removes that buffer.
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  function toggle(group, variant, btn) {
+    btn.parentElement.querySelectorAll('.branch-btn').forEach(b => b.classList.remove('on'));
+    btn.classList.add('on');
+    ['onshore','standard'].forEach(v => {
+      const el = document.getElementById(group + '-' + v);
+      if (el) el.style.display = v === variant ? 'block' : 'none';
+    });
+  }
+
+  // TOC active state
+  const secs = document.querySelectorAll('[id]');
+  const links = document.querySelectorAll('.toc-list a');
+  new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting)
+        links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' }).observe && secs.forEach(s =>
+    new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting)
+          links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id));
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' }).observe(s)
+  );
+</script>
+
+</body>
+</html>

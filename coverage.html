@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Coverage Maps — Program Fit & Financial Resources</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --text:        #202122;
+      --text-light:  #54595d;
+      --border:      #a2a9b1;
+      --border-lt:   #c8ccd1;
+      --bg:          #ffffff;
+      --bg-soft:     #f8f9fa;
+
+      --cw-bg: #d4edda; --cw-bd: #6cb878; --cw-tx: #155724;   /* Covered well */
+      --cb-bg: #fff3cd; --cb-bd: #ffc107; --cb-tx: #856404;   /* Covered but weak */
+      --bc-bg: #ffe5b4; --bc-bd: #e68a00; --bc-tx: #6d3a00;   /* Barely covered */
+      --nc-bg: #f8d7da; --nc-bd: #dc3545; --nc-tx: #721c24;   /* Not covered */
+
+      --str-bg: #d4edda; --str-tx: #155724;
+      --med-bg: #fff3cd; --med-tx: #856404;
+      --wk-bg:  #f8d7da; --wk-tx:  #721c24;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: -apple-system, Arial, Helvetica, sans-serif;
+      font-size: 13.5px;
+      line-height: 1.55;
+      color: var(--text);
+      background: var(--bg);
+    }
+
+    /* ── Header ──────────────────────────── */
+    .pg-header {
+      padding: 18px 32px 14px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .pg-title {
+      font-family: Georgia, serif;
+      font-size: 21px;
+      font-weight: normal;
+      flex: 1;
+    }
+
+    .pg-meta { font-size: 11.5px; color: var(--text-light); }
+
+    .nav-link { font-size: 12px; color: #3366cc; text-decoration: none; }
+    .nav-link:hover { text-decoration: underline; }
+
+    /* ── Page ──────────────────────────────── */
+    .wrap { max-width: 1300px; margin: 0 auto; padding: 0 28px 80px; }
+
+    /* ── Legend ─────────────────────────── */
+    .legend {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin: 18px 0 0;
+      font-size: 11.5px;
+      align-items: center;
+    }
+
+    .leg {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 9px;
+      border: 1px solid;
+      border-radius: 2px;
+      font-weight: 600;
+      font-size: 11px;
+    }
+
+    .leg-cw { background: var(--cw-bg); border-color: var(--cw-bd); color: var(--cw-tx); }
+    .leg-cb { background: var(--cb-bg); border-color: var(--cb-bd); color: var(--cb-tx); }
+    .leg-bc { background: var(--bc-bg); border-color: var(--bc-bd); color: var(--bc-tx); }
+    .leg-nc { background: var(--nc-bg); border-color: var(--nc-bd); color: var(--nc-tx); }
+
+    /* ── Trait block ─────────────────────── */
+    .trait { margin-top: 44px; }
+
+    .trait-header {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 5px;
+      margin-bottom: 20px;
+    }
+
+    .trait-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--text-light);
+      margin-bottom: 3px;
+    }
+
+    .trait-title {
+      font-family: Georgia, serif;
+      font-size: 22px;
+      font-weight: normal;
+    }
+
+    /* ── Section blocks ──────────────────── */
+    .block { margin-bottom: 28px; }
+
+    .block-label {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: #fff;
+      background: var(--text-light);
+      padding: 2px 8px;
+      margin-bottom: 6px;
+      border-radius: 2px;
+    }
+
+    .block-label-a { background: #2563eb; }
+    .block-label-b { background: #374151; }
+    .block-label-c { background: #b45309; }
+    .block-label-d { background: #7c3aed; }
+    .block-label-e { background: #15803d; }
+
+    .def-box {
+      background: var(--bg-soft);
+      border: 1px solid var(--border-lt);
+      border-left: 3px solid #2563eb;
+      padding: 9px 14px;
+      font-size: 13.5px;
+      color: var(--text);
+      margin-bottom: 0;
+    }
+
+    /* ── Coverage table ──────────────────── */
+    .tbl-wrap { overflow-x: auto; }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      font-size: 12.5px;
+    }
+
+    thead th {
+      background: #1e293b;
+      color: #f1f5f9;
+      border: 1px solid #334155;
+      padding: 8px 10px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    tbody td {
+      border: 1px solid var(--border);
+      padding: 8px 10px;
+      vertical-align: top;
+      line-height: 1.5;
+    }
+
+    tbody tr:hover td { background: #f9fafb; }
+
+    /* Status cells */
+    .st { font-weight: 700; font-size: 11px; white-space: nowrap; padding: 5px 8px; text-align: center; border: 1px solid; }
+    .st-cw { background: var(--cw-bg); border-color: var(--cw-bd); color: var(--cw-tx); }
+    .st-cb { background: var(--cb-bg); border-color: var(--cb-bd); color: var(--cb-tx); }
+    .st-bc { background: var(--bc-bg); border-color: var(--bc-bd); color: var(--bc-tx); }
+    .st-nc { background: var(--nc-bg); border-color: var(--nc-bd); color: var(--nc-tx); }
+
+    /* Signal quality cells */
+    .sq { font-size: 11px; font-weight: 600; padding: 4px 7px; white-space: nowrap; border-radius: 2px; }
+    .sq-str { background: var(--str-bg); color: var(--str-tx); }
+    .sq-med { background: var(--med-bg); color: var(--med-tx); }
+    .sq-wk  { background: var(--wk-bg);  color: var(--wk-tx); }
+
+    td.sub { font-weight: 700; color: #0f172a; font-size: 12.5px; white-space: nowrap; }
+
+    /* ── Gaps block ──────────────────────── */
+    .gaps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .gap-card {
+      border: 1px solid var(--border);
+      border-left: 3px solid #b45309;
+      padding: 10px 12px;
+      background: #fffbf0;
+    }
+
+    .gap-num {
+      font-size: 10px;
+      font-weight: 700;
+      color: #b45309;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 3px;
+    }
+
+    .gap-title { font-weight: 700; font-size: 12.5px; color: #0f172a; margin-bottom: 4px; }
+    .gap-body { font-size: 12px; color: var(--text-light); line-height: 1.5; }
+
+    /* ── Fixed output block ──────────────── */
+    .fixed-box {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-left: 3px solid #15803d;
+      padding: 12px 16px;
+    }
+
+    .fixed-box-title {
+      font-weight: 700;
+      font-size: 12px;
+      color: #15803d;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 8px;
+    }
+
+    .fixed-item {
+      display: flex;
+      gap: 10px;
+      padding: 5px 0;
+      border-bottom: 1px solid #bbf7d0;
+      font-size: 13px;
+    }
+
+    .fixed-item:last-child { border-bottom: none; }
+    .fixed-lock { font-size: 11px; font-weight: 700; color: #15803d; white-space: nowrap; }
+
+    /* ── Audio opportunity rows ──────────── */
+    .audio-table table { font-size: 12px; }
+
+    .audio-tag {
+      display: inline-block;
+      background: #ede9fe;
+      border: 1px solid #7c3aed;
+      color: #3b0764;
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 2px;
+    }
+
+    hr { border: none; border-top: 2px solid var(--border); margin: 48px 0 0; }
+
+    /* ── Striped rows ─────────────────────── */
+    tbody tr:nth-child(even) td { background: #f9fafb; }
+    tbody tr:nth-child(even):hover td { background: #f1f5f9; }
+  </style>
+</head>
+<body>
+
+<div class="pg-header">
+  <h1 class="pg-title">Coverage Maps — Program Fit &amp; Financial Resources</h1>
+  <div style="display:flex;gap:12px;align-items:center;">
+    <a class="nav-link" href="index.html">← Full baseline</a>
+    <a class="nav-link" href="traits.html">← Traits detail</a>
+    <a class="nav-link" href="flowcharts.html">← Flowcharts</a>
+  </div>
+  <div class="pg-meta">What is covered · What is weak · What is missing · What adaptive audio can fix</div>
+</div>
+
+<div class="wrap">
+
+  <div class="legend">
+    <span style="font-size:11.5px;color:var(--text-light);margin-right:4px;">Coverage status:</span>
+    <span class="leg leg-cw">Covered well</span>
+    <span class="leg leg-cb">Covered but weak</span>
+    <span class="leg leg-bc">Barely covered</span>
+    <span class="leg leg-nc">Not covered</span>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       TRAIT 1 — PROGRAM FIT
+  ════════════════════════════════════════════════ -->
+  <div class="trait" id="pf">
+    <div class="trait-header">
+      <div class="trait-eyebrow">Coverage Map 1 of 2</div>
+      <div class="trait-title">Program Fit</div>
+    </div>
+
+    <!-- A: Trait definition -->
+    <div class="block">
+      <div class="block-label block-label-a">A — Trait Definition</div>
+      <div class="def-box">
+        Measures how well the applicant's prior education, work experience, and stated motivation align with the specific program they are applying to — including whether their expectations are realistic and their reasons for choosing the program are genuine.
+      </div>
+    </div>
+
+    <!-- B: Coverage matrix -->
+    <div class="block">
+      <div class="block-label block-label-b">B — Current Subdimensions Covered Today</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:14%;">Subdimension</th>
+              <th style="width:12%;">Coverage Status</th>
+              <th style="width:12%;">Current Input Source</th>
+              <th style="width:18%;">How Assessed Today</th>
+              <th style="width:8%;">Signal Quality</th>
+              <th style="width:36%;">Comments</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="sub">Education Fit</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Resume, academic transcript, interview transcript</td>
+              <td>Officer scores Relevance (50%), Duration (20%), Depth (30%) and applies weighted formula</td>
+              <td><span class="sq sq-med">Medium</span></td>
+              <td>Formula exists and is clear. Weakness: Depth score depends on officer inferring knowledge quality from transcript titles and grades alone. Applicant never has to demonstrate they understood what they studied.</td>
+            </tr>
+            <tr>
+              <td class="sub">Industry Experience</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Resume, interview transcript</td>
+              <td>Officer scores Relevance (50%), Duration (20%), Depth (30%) and applies weighted formula. Part-time adjustment noted in rubric.</td>
+              <td><span class="sq sq-med">Medium</span></td>
+              <td>Formula is solid. Weakness: duration is assessed from resume dates with no structured question to confirm hours per week. Part-time vs. full-time distinction is often missed. Depth relies on what the applicant volunteers.</td>
+            </tr>
+            <tr>
+              <td class="sub">Realistic understanding of program</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Interview transcript, questionnaire</td>
+              <td>Sub-criterion within Statement of Purpose (50% weight). Officer judges from whatever the applicant says during the interview.</td>
+              <td><span class="sq sq-wk">Weak</span></td>
+              <td>No structured question exists to test program knowledge. Applicants who give vague answers often score 3 by default. Misinformation is rarely surfaced unless the officer directly challenges the applicant.</td>
+            </tr>
+            <tr>
+              <td class="sub">Motivation for the program</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Interview transcript, questionnaire</td>
+              <td>Sub-criterion within Statement of Purpose (50% weight). Officer judges from open-ended interview answer.</td>
+              <td><span class="sq sq-wk">Weak</span></td>
+              <td>Single open-ended question yields the entire motivation signal. Generic answers ("I want to improve my career") are very common and hard to distinguish from genuine motivation without follow-ups.</td>
+            </tr>
+            <tr>
+              <td class="sub">Duration &amp; transferability logic</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Resume, interview transcript</td>
+              <td>Duration sub-score (20% weight in both Education Fit and Industry Experience). Transferability is the Depth sub-score (30% weight).</td>
+              <td><span class="sq sq-med">Medium</span></td>
+              <td>Logic is correctly designed. Weakness: the officer often works from resume dates alone. Exact tenure and responsibilities per role are not verified from a second source unless the applicant elaborates in the interview.</td>
+            </tr>
+            <tr>
+              <td class="sub">Part-time vs. full-time clarification</td>
+              <td><span class="st st-bc">Barely covered</span></td>
+              <td>Resume (dates only), interview transcript</td>
+              <td>Rubric instructs the officer to adjust for part-time work, but there is no structured question. Officer must infer from resume context.</td>
+              <td><span class="sq sq-wk">Weak</span></td>
+              <td>Rubric says 6 months part-time ≠ 6 months full-time, but hours per week are almost never explicitly confirmed. Most resumes do not state hours. This leads to consistent over-scoring on the Duration sub-criterion.</td>
+            </tr>
+            <tr>
+              <td class="sub">Volunteer vs. paid work quality</td>
+              <td><span class="st st-bc">Barely covered</span></td>
+              <td>Resume, interview transcript</td>
+              <td>Rubric states volunteer work is lower quality than paid work and should be flagged. Detection is passive — officer must identify it from context.</td>
+              <td><span class="sq sq-wk">Weak</span></td>
+              <td>No structured question to surface unpaid work. Applicants sometimes present volunteer roles using professional language, making them easy to misclassify. The flag only fires if the officer actively catches it.</td>
+            </tr>
+            <tr>
+              <td class="sub">Verifiability of claims</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Resume, transcript, interview transcript, questionnaire</td>
+              <td>Rubric states unverifiable experience scores 0 on all sub-criteria. Officer cross-references sources manually.</td>
+              <td><span class="sq sq-med">Medium</span></td>
+              <td>Rule is clear and strict (unverifiable = 0). Weakness: the officer relies on their own judgment to decide what counts as unverifiable. No checklist. No contradiction probe in the interview. Easy to slip through if the applicant is consistent.</td>
+            </tr>
+            <tr>
+              <td class="sub">Discrepancy handling</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Resume vs. interview vs. questionnaire</td>
+              <td>Rubric instructs officer to flag discrepancies side-by-side in the report. Officer makes the comparison manually.</td>
+              <td><span class="sq sq-med">Medium</span></td>
+              <td>Rule exists and is clear. Weakness: relies entirely on the officer noticing the discrepancy. No structured contradiction check built into the interview. A well-prepared applicant who is internally consistent will not be probed.</td>
+            </tr>
+            <tr>
+              <td class="sub">Program Fit rubric (program-specific)</td>
+              <td><span class="st st-bc">Barely covered</span></td>
+              <td>External runtime injection: program_fit rubric</td>
+              <td>Injected as a template variable at runtime. If present, officer applies it. If absent, score is N/A.</td>
+              <td><span class="sq sq-wk">Weak</span></td>
+              <td>The rubric content itself is not defined in the baseline. Quality and depth vary entirely by whoever wrote the program-specific rubric. If the rubric is vague, the Program Fit score is vague. This is a structural dependency outside the officer's control.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- C: Missing or weak areas -->
+    <div class="block">
+      <div class="block-label block-label-c">C — Missing or Weak Areas</div>
+      <div class="gaps-grid">
+        <div class="gap-card">
+          <div class="gap-num">Gap 1</div>
+          <div class="gap-title">No structured test of program knowledge</div>
+          <div class="gap-body">Realistic understanding (50% of SOP score) is assessed from whatever the applicant volunteers. There is no question that directly tests whether they researched the program. Misinformed applicants score 3 by default if they sound confident.</div>
+        </div>
+        <div class="gap-card">
+          <div class="gap-num">Gap 2</div>
+          <div class="gap-title">Part-time hours never confirmed</div>
+          <div class="gap-body">The Duration sub-score is systematically over-scored because hours per week are almost never explicitly confirmed. Resumes show date ranges only. The adjustment rule exists but has no input to act on.</div>
+        </div>
+        <div class="gap-card">
+          <div class="gap-num">Gap 3</div>
+          <div class="gap-title">Volunteer work detection is passive</div>
+          <div class="gap-body">The rule (volunteer = lower quality) is correct, but detection depends entirely on the officer catching professional-sounding volunteer language in the resume or interview. No probe exists to surface this distinction.</div>
+        </div>
+        <div class="gap-card">
+          <div class="gap-num">Gap 4</div>
+          <div class="gap-title">Motivation signal is a single one-shot answer</div>
+          <div class="gap-body">The entire 50% motivation score comes from one open-ended question. Generic answers are common. There is no follow-up logic to push past surface-level reasons or test whether the applicant has real conviction versus just saying the right words.</div>
+        </div>
+        <div class="gap-card">
+          <div class="gap-num">Gap 5</div>
+          <div class="gap-title">Depth of knowledge is inferred, not demonstrated</div>
+          <div class="gap-body">Education Fit and Industry Experience both have a Depth sub-score (30% weight). But depth is inferred from course titles and job titles — not from the applicant actually demonstrating they understand the work they claim to have done.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D: Adaptive audio opportunity -->
+    <div class="block">
+      <div class="block-label block-label-d">D — Adaptive Audio Opportunity</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:18%;">Weak Area</th>
+              <th style="width:33%;">What Adaptive Audio Could Ask</th>
+              <th style="width:28%;">Better Signal Captured</th>
+              <th style="width:21%;">Subdimension Improved</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Program knowledge gap</strong></td>
+              <td>"What do you expect to be doing in the first six months of this program?" / "What job title do you expect two years after graduating?" / "What is one thing about this program that surprised you when you researched it?"</td>
+              <td>Separates applicants who researched from those who did not. Misinformed expectations become immediately visible.</td>
+              <td><span class="audio-tag">Realistic Understanding (50% of SOP)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Part-time vs. full-time hours</strong></td>
+              <td>After any role is mentioned: "How many hours per week did you typically work in that role?" / "Was that a full-time position or part-time?"</td>
+              <td>Provides the exact input the Duration sub-score rule needs to apply its part-time adjustment. Removes systematic over-scoring.</td>
+              <td><span class="audio-tag">Duration sub-score (20% weight)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Volunteer vs. paid detection</strong></td>
+              <td>"Was this a paid position or voluntary?" / "Who did you report to in that role?" / "What was your monthly compensation?"</td>
+              <td>Binary classification (paid vs. volunteer) that directly routes to the correct quality flag. Eliminates passive detection risk.</td>
+              <td><span class="audio-tag">Job Readiness + Industry Experience</span></td>
+            </tr>
+            <tr>
+              <td><strong>Shallow motivation</strong></td>
+              <td>If first answer is generic: "You mentioned wanting to improve — what specifically about this program over a different option in the same field?" / "Walk me through how you decided on this program specifically."</td>
+              <td>Forces specificity. Generic answers become distinguishable from researched answers. Scores 1–2 become defensible.</td>
+              <td><span class="audio-tag">Motivation (50% of SOP)</span></td>
+            </tr>
+            <tr>
+              <td><strong>Depth of knowledge (inferred)</strong></td>
+              <td>For education: "What was your final project or thesis on?" / For work: "Walk me through what you actually did on a typical day in that role." / "What was the hardest problem you solved?"</td>
+              <td>Distinguishes a candidate who lists a course title from one who genuinely learned. Directly feeds the Depth sub-score (30% weight) with evidence, not inference.</td>
+              <td><span class="audio-tag">Depth &amp; Transferability (30% weight)</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- E: Fixed output -->
+    <div class="block">
+      <div class="block-label block-label-e">E — Fixed Output (Must Stay the Same)</div>
+      <div class="fixed-box">
+        <div class="fixed-box-title">Do Not Change</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Program Fit Score — integer 1 to 5, or N/A if rubric unavailable</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Program Fit Report — written justification referencing rubric criteria and sub-dimension scores</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Education Fit formula: Relevance × 0.50 + Duration × 0.20 + Depth × 0.30</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Industry Experience formula: Relevance × 0.50 + Duration × 0.20 + Depth × 0.30</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Statement of Purpose formula: Understanding × 0.50 + Motivation × 0.50</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Unverifiable experience = 0 across all sub-criteria</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Volunteer work = flagged as lower quality than paid work</div>
+      </div>
+    </div>
+  </div>
+
+  <hr />
+
+  <!-- ═══════════════════════════════════════════════
+       TRAIT 2 — FINANCIAL RESOURCES
+  ════════════════════════════════════════════════ -->
+  <div class="trait" id="fr">
+    <div class="trait-header">
+      <div class="trait-eyebrow">Coverage Map 2 of 2</div>
+      <div class="trait-title">Financial Resources</div>
+    </div>
+
+    <!-- A: Trait definition -->
+    <div class="block">
+      <div class="block-label block-label-a">A — Trait Definition</div>
+      <div class="def-box">
+        Assesses whether the applicant has a realistic, verifiable financial position to support loan repayment — including their assets, debt, how they are sourcing the upfront cash collateral, and (for onshore applicants) their current income versus expenses.
+      </div>
+    </div>
+
+    <!-- B: Coverage matrix -->
+    <div class="block">
+      <div class="block-label block-label-b">B — Current Subdimensions Covered Today</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:14%;">Subdimension</th>
+              <th style="width:12%;">Coverage Status</th>
+              <th style="width:13%;">Current Input Source</th>
+              <th style="width:18%;">How Assessed Today</th>
+              <th style="width:8%;">Signal Quality</th>
+              <th style="width:35%;">Comments</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="sub">Assets (general)</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Loan questionnaire, interview transcript</td>
+              <td>Officer extracts declared assets from both sources and cross-verifies. Flags discrepancies over CAD 5,000 side-by-side.</td>
+              <td><span class="sq sq-med">Medium</span></td>
+              <td>Rule and cross-check exist. Weakness: inputs depend entirely on what the applicant voluntarily reports. No structured asset-by-category enumeration. Applicants often bundle figures ("I have some savings") without itemizing.</td>
+            </tr>
+            <tr>
+              <td class="sub">Canadian vs. back-home asset split</td>
+              <td><span class="st st-bc">Barely covered</span></td>
+              <td>Loan questionnaire, interview transcript</td>
+              <td>Rubric instructs officer to separate CA assets (higher weight) from back-home assets (lower weight). No structured question enforces this split in the interview.</td>
+              <td><span class="sq sq-wk">Weak</span></td>
+              <td>The weighting rule is correctly defined but cannot be applied accurately because applicants frequently report a bundled savings figure. The CA vs. back-home distinction is almost never explicitly asked. Officers often guess or skip the split.</td>
+            </tr>
+            <tr>
+              <td class="sub">Liquidity ordering</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Loan questionnaire, interview transcript</td>
+              <td>Rubric defines liquidity order: Savings &gt; Car &gt; Land &gt; House &gt; Other. Officer applies this hierarchy when weighting assets.</td>
+              <td><span class="sq sq-med">Medium</span></td>
+              <td>Hierarchy is clear and correct. Weakness: it can only be applied if assets are itemized. If the applicant gives a single bundled figure, the hierarchy has nothing to act on. Quality of input determines whether the rule fires at all.</td>
+            </tr>
+            <tr>
+              <td class="sub">Debt (declared)</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Loan questionnaire, interview transcript, Canadian credit report (onshore)</td>
+              <td>Officer cross-verifies all three sources. Any mismatch is a high-priority flag. Soft vs. hard lender type recorded. Monthly payment and duration evaluated.</td>
+              <td><span class="sq sq-med">Medium</span></td>
+              <td>Cross-verification rule is strong and correctly prioritized. Weakness: almost every applicant says "no debt" in the interview. The rule exists to catch contradictions, but if no contradiction is visible on the surface, undeclared debt is not probed.</td>
+            </tr>
+            <tr>
+              <td class="sub">Source of cash collateral</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Loan questionnaire, interview transcript</td>
+              <td>Officer identifies the source (gift, loan, asset sale) and cross-verifies between questionnaire and interview. Mismatch is a high-priority flag.</td>
+              <td><span class="sq sq-wk">Weak</span></td>
+              <td>Classification logic is correct and important. Weakness: the question is typically one open-ended ask. Vague answers like "my family will help" are extremely common and cannot be accurately classified as gift vs. loan without a follow-up.</td>
+            </tr>
+            <tr>
+              <td class="sub">Gift vs. loan vs. asset sale</td>
+              <td><span class="st st-bc">Barely covered</span></td>
+              <td>Loan questionnaire, interview transcript</td>
+              <td>Rubric defines clear rules: gift adds to assets, loan adds to debt, sale is neutral. Officer applies rules after identifying the source type.</td>
+              <td><span class="sq sq-wk">Weak</span></td>
+              <td>The downstream rule is airtight. The upstream detection is the failure point. "My parents are helping me" is genuinely ambiguous — it could be a gift or a soft loan. Without a direct clarifying question ("will you pay it back?"), classification is a guess.</td>
+            </tr>
+            <tr>
+              <td class="sub">Onshore income and expenses</td>
+              <td><span class="st st-cw">Covered well</span></td>
+              <td>Interview transcript, questionnaire, bank documents</td>
+              <td>Full income statement required for onshore-auto applicants. Monthly income vs. expenses evaluated. CAD 1,000/mo threshold applied. Relocation risk checked.</td>
+              <td><span class="sq sq-str">Strong</span></td>
+              <td>Most complete section in the financial resources rubric. Logic is well-structured for onshore applicants. Main gap: not available at all for offshore applicants, leaving a significant blind spot for their cash flow picture.</td>
+            </tr>
+            <tr>
+              <td class="sub">Relocation risk</td>
+              <td><span class="st st-bc">Barely covered</span></td>
+              <td>Interview transcript (implied)</td>
+              <td>Rubric notes: if the job is in a different city from the school, income may be lost when repayment starts. No structured question exists to surface this.</td>
+              <td><span class="sq sq-wk">Weak</span></td>
+              <td>The risk is correctly identified in the rubric. But the input to detect it (job city vs. school city) is almost never explicitly confirmed in the interview. Officers must infer from context or remember to ask. Frequently missed.</td>
+            </tr>
+            <tr>
+              <td class="sub">Questionnaire vs. interview contradictions</td>
+              <td><span class="st st-cb">Covered but weak</span></td>
+              <td>Loan questionnaire vs. interview transcript</td>
+              <td>Rubric instructs officer to compare both sources and flag discrepancies side-by-side. Debt mismatches are highest priority. Asset mismatches over CAD 5,000 are flagged.</td>
+              <td><span class="sq sq-med">Medium</span></td>
+              <td>Rules are correctly designed and prioritized. Weakness: the officer notices contradictions only if they are obvious from a side-by-side read. There is no real-time contradiction probe during the interview to surface inconsistencies while the applicant can still respond.</td>
+            </tr>
+            <tr>
+              <td class="sub">Repayment realism</td>
+              <td><span class="st st-bc">Barely covered</span></td>
+              <td>Interview transcript (one question)</td>
+              <td>Summary section includes a "Monthly Payment Plan" field. Officer records how the applicant plans to make payments. If answer is absent or unreasonable, field reads "No answer provided."</td>
+              <td><span class="sq sq-wk">Weak</span></td>
+              <td>One of the most important signals for actual repayment risk, and the weakest in the current system. Vague answers ("I'll find work") are accepted. There is no follow-up to test feasibility. No monthly math is done. No comparison to expenses.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- C: Missing or weak areas -->
+    <div class="block">
+      <div class="block-label block-label-c">C — Missing or Weak Areas</div>
+      <div class="gaps-grid">
+        <div class="gap-card">
+          <div class="gap-num">Gap 1</div>
+          <div class="gap-title">Collateral source classification is guesswork</div>
+          <div class="gap-body">"My family will help" cannot be classified as gift vs. loan without a direct question. This single ambiguity changes whether the amount goes into Total Assets or Total Debt — a material difference in the score.</div>
+        </div>
+        <div class="gap-card">
+          <div class="gap-num">Gap 2</div>
+          <div class="gap-title">Canadian vs. back-home asset split almost never confirmed</div>
+          <div class="gap-body">The CA asset weighting rule is one of the most important rules in the rubric for onshore applicants. But the split is rarely asked explicitly. Officers often apply the higher weight to figures they cannot verify are actually in Canada.</div>
+        </div>
+        <div class="gap-card">
+          <div class="gap-num">Gap 3</div>
+          <div class="gap-title">Undeclared debt is not probed</div>
+          <div class="gap-body">Cross-verify exists for declared debt. But there is no structured follow-up when an applicant says "no debt." Credit cards, informal family loans, and soft debt are routinely undisclosed unless explicitly asked.</div>
+        </div>
+        <div class="gap-card">
+          <div class="gap-num">Gap 4</div>
+          <div class="gap-title">Repayment realism has no math behind it</div>
+          <div class="gap-body">The monthly payment plan field accepts any answer. "I'll work part-time" is recorded and treated the same as a specific, calculated plan. No follow-up exists to test whether the stated plan actually covers the monthly obligation.</div>
+        </div>
+        <div class="gap-card">
+          <div class="gap-num">Gap 5</div>
+          <div class="gap-title">Relocation risk is almost never surfaced</div>
+          <div class="gap-body">Job city vs. school city is not a standard question. For onshore applicants who rely on current income for repayment, this is a high-impact risk factor that is frequently missed entirely.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- D: Adaptive audio opportunity -->
+    <div class="block">
+      <div class="block-label block-label-d">D — Adaptive Audio Opportunity</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:18%;">Weak Area</th>
+              <th style="width:33%;">What Adaptive Audio Could Ask</th>
+              <th style="width:28%;">Better Signal Captured</th>
+              <th style="width:21%;">Subdimension Improved</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Collateral source ambiguity</strong></td>
+              <td>"Is that money being given to you, or will you need to pay it back?" / If still unclear: "Is there any formal or informal agreement to repay it?" / "Is it a gift or a loan?"</td>
+              <td>Binary classification: gift (→ add to assets) or loan (→ add to debt). Eliminates classification guesswork. Most impactful single question in the financial flow.</td>
+              <td><span class="audio-tag">Source of Cash Collateral</span></td>
+            </tr>
+            <tr>
+              <td><strong>CA vs. back-home asset split</strong></td>
+              <td>After any savings figure: "Is that money in a Canadian bank account right now, or is it abroad?" / "Of the total you mentioned, how much is currently in Canada?"</td>
+              <td>Splits the figure into two correctly-weighted buckets. Allows the CA asset priority rule to fire accurately instead of being guessed.</td>
+              <td><span class="audio-tag">Canadian vs. back-home assets</span></td>
+            </tr>
+            <tr>
+              <td><strong>Undeclared debt</strong></td>
+              <td>After "no debt" answer: "Do you have any credit cards with a balance, car payments, or informal loans from family or friends?" / "Are you currently paying anything back to anyone?"</td>
+              <td>Surfaces soft debt that is routinely missed. Forces a second, more specific denial — which is harder to maintain if soft loans exist. Directly feeds the debt cross-verification rule.</td>
+              <td><span class="audio-tag">Debt cross-verification</span></td>
+            </tr>
+            <tr>
+              <td><strong>Repayment realism</strong></td>
+              <td>"You mentioned working part-time — what type of work are you thinking, and what do you expect to earn per month?" / "Your loan payment would be around X per month. Walk me through how you would cover that from month one."</td>
+              <td>Converts a vague plan into a testable number. Immediately surfaces whether the stated plan is feasible against the actual monthly obligation.</td>
+              <td><span class="audio-tag">Repayment realism</span></td>
+            </tr>
+            <tr>
+              <td><strong>Relocation risk</strong></td>
+              <td>"Where is your current job located?" / "Where will your school be?" / If different: "Are you planning to keep that job while studying, or would you need to find something new in the new city?"</td>
+              <td>Directly surfaces the income continuity risk for onshore applicants. If relocation is confirmed, the income signal that was counted as a positive is correctly reclassified as temporary.</td>
+              <td><span class="audio-tag">Onshore income statement</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- E: Fixed output -->
+    <div class="block">
+      <div class="block-label block-label-e">E — Fixed Output (Must Stay the Same)</div>
+      <div class="fixed-box">
+        <div class="fixed-box-title">Do Not Change</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Financial Resources Score — integer 1 to 5</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Financial Resources Report — assets listed, debt listed, collateral source, flags, score rationale</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Gift = adds to Total Assets. Loan = adds to Total Debt. Asset sale = neutral.</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>CA assets weighted above back-home assets (onshore applicants)</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Liquidity hierarchy: Savings &gt; Car &gt; Land &gt; House &gt; Other</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Debt mismatch between any two sources = highest-priority flag</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Asset discrepancy &gt; CAD 5,000 = flag. Under CAD 5,000 = low priority.</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>Onshore income threshold: CAD 1,000/month = serious employment signal</div>
+        <div class="fixed-item"><span class="fixed-lock">LOCKED</span>onshore-auto tag determines which financial logic path is applied</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
