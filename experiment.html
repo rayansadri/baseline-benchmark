@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Experiment Documentation — Ella V1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #ffffff;
+      --bg-soft:      #f8f8f7;
+      --text:         #111111;
+      --text-body:    #3d3d3d;
+      --text-mid:     #666666;
+      --text-dim:     #999999;
+      --text-muted:   #bbbbbb;
+      --border:       #e4e4e4;
+      --border-light: #f0f0ee;
+      --code-bg:      #f6f6f5;
+      --code-border:  #e2e2e0;
+      --badge-bg:     #f0fdf4;
+      --badge-text:   #15803d;
+      --badge-border: #bbf7d0;
+      --link:         #2563eb;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      background: var(--bg);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      font-size: 16px;
+    }
+
+    /* ── Page wrapper ──────────────────────── */
+    .page-wrap {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    /* ── Document header ───────────────────── */
+    .doc-header {
+      padding: 52px 0 44px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .doc-eyebrow {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    .doc-title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+
+    .doc-subtitle {
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text-mid);
+      line-height: 1.6;
+      max-width: 560px;
+      margin-bottom: 24px;
+    }
+
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px 6px;
+      font-size: 12.5px;
+      color: var(--text-dim);
+    }
+
+    .meta-key { font-weight: 500; color: var(--text-mid); }
+    .meta-sep { color: var(--border); margin: 0 2px; }
+
+    .badge {
+      display: inline-block;
+      background: var(--badge-bg);
+      color: var(--badge-text);
+      border: 1px solid var(--badge-border);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 100px;
+      letter-spacing: 0.02em;
+    }
+
+    /* ── Body layout ───────────────────────── */
+    .doc-layout {
+      display: flex;
+      align-items: flex-start;
+      gap: 60px;
+      padding-top: 0;
+    }
+
+    /* ── TOC sidebar ───────────────────────── */
+    .toc-col {
+      width: 188px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 36px;
+      padding-top: 40px;
+      padding-bottom: 40px;
+      max-height: calc(100vh - 72px);
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .toc-col::-webkit-scrollbar { display: none; }
+
+    .toc-heading {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .toc-link {
+      display: block;
+      font-size: 12.5px;
+      color: var(--text-muted);
+      text-decoration: none;
+      padding: 3.5px 0 3.5px 12px;
+      border-left: 2px solid transparent;
+      line-height: 1.4;
+      transition: color 0.12s, border-color 0.12s;
+      margin-bottom: 1px;
+    }
+    .toc-link:hover  { color: var(--text-body); border-left-color: var(--border); }
+    .toc-link.active { color: var(--text); border-left-color: var(--text); font-weight: 500; }
+
+    /* ── Main content column ───────────────── */
+    .doc-main {
+      flex: 1;
+      min-width: 0;
+      max-width: 672px;
+      padding-top: 40px;
+      padding-bottom: 100px;
+    }
+
+    /* ── Sections ──────────────────────────── */
+    .doc-section {
+      margin-bottom: 64px;
+      scroll-margin-top: 36px;
+    }
+
+    .sec-header {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 22px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .sec-num {
+      font-family: 'Courier New', 'SF Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 400;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+
+    .sec-header h2 {
+      font-size: 18.5px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+    }
+
+    /* ── Body text ─────────────────────────── */
+    .doc-p {
+      font-size: 15.5px;
+      line-height: 1.8;
+      color: var(--text-body);
+      margin-bottom: 16px;
+    }
+    .doc-p:last-child { margin-bottom: 0; }
+    .doc-p strong { color: var(--text); font-weight: 600; }
+    .doc-p em { font-style: italic; color: var(--text-mid); }
+
+    .doc-h3 {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 28px 0 8px;
+      letter-spacing: -0.01em;
+    }
+    .doc-h3:first-child { margin-top: 0; }
+
+    /* ── Lists ─────────────────────────────── */
+    .doc-ul {
+      list-style: none;
+      padding: 0;
+      margin: 6px 0 18px;
+    }
+    .doc-ul li {
+      font-size: 15.5px;
+      line-height: 1.75;
+      color: var(--text-body);
+      padding: 3px 0 3px 22px;
+      position: relative;
+    }
+    .doc-ul li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+    .doc-ul li strong { color: var(--text); font-weight: 600; }
+
+    .doc-ol {
+      list-style: none;
+      counter-reset: doc-ol;
+      padding: 0;
+      margin: 6px 0 18px;
+    }
+    .doc-ol li {
+      font-size: 15.5px;
+      line-height: 1.75;
+      color: var(--text-body);
+      padding: 4px 0 4px 30px;
+      position: relative;
+      counter-increment: doc-ol;
+    }
+    .doc-ol li::before {
+      content: counter(doc-ol);
+      position: absolute;
+      left: 0;
+      width: 20px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      top: 7px;
+    }
+    .doc-ol li strong { color: var(--text); font-weight: 600; }
+
+    /* ── Mental model strip ────────────────── */
+    .model-strip {
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+      margin: 24px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .model-item {
+      flex: 1;
+      padding: 20px 20px;
+      border-right: 1px solid var(--border);
+    }
+    .model-item:last-child { border-right: none; }
+
+    .model-name {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+    .model-role {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .model-desc {
+      font-size: 12.5px;
+      color: var(--text-mid);
+      line-height: 1.55;
+    }
+    .model-arrow-cell {
+      display: flex;
+      align-items: center;
+      padding: 0 4px;
+      color: var(--text-muted);
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    /* ── Code block ────────────────────────── */
+    .doc-code {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      border-radius: 6px;
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+    .doc-code pre {
+      font-family: 'SF Mono', 'Fira Code', 'Consolas', 'Courier New', monospace;
+      font-size: 12.5px;
+      line-height: 1.7;
+      color: #2a2a2a;
+      padding: 20px 24px;
+      white-space: pre;
+    }
+    .doc-code .ln-dim { color: var(--text-muted); }
+    .doc-code .ln-key { color: var(--text); font-weight: 600; }
+    .doc-code .ln-val { color: #4a4a4a; }
+    .doc-code .ln-head { color: var(--text); font-weight: 700; letter-spacing: 0.03em; }
+    .doc-code .ln-rule { color: var(--text-muted); }
+    .doc-code .ln-flag { color: #b45309; }
+
+    /* ── Tables ────────────────────────────── */
+    .doc-tbl-wrap {
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+    .doc-tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    .doc-tbl thead th {
+      font-size: 10.5px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px 10px 0;
+      text-align: left;
+      white-space: nowrap;
+    }
+    .doc-tbl thead th:last-child { padding-right: 0; }
+
+    .doc-tbl tbody tr { border-bottom: 1px solid var(--border-light); }
+    .doc-tbl tbody tr:last-child { border-bottom: none; }
+    .doc-tbl tbody td {
+      padding: 11px 20px 11px 0;
+      vertical-align: top;
+      color: var(--text-body);
+      line-height: 1.6;
+    }
+    .doc-tbl tbody td:last-child { padding-right: 0; }
+
+    .td-mono {
+      font-family: 'Courier New', monospace;
+      font-size: 11.5px;
+      color: var(--text-dim);
+      white-space: nowrap;
+    }
+    .td-bold { font-weight: 600; color: var(--text); }
+    .td-dim  { color: var(--text-dim); font-size: 13px; }
+
+    /* ── Mermaid wrapper ───────────────────── */
+    .mermaid-wrap {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-soft);
+      padding: 28px 20px;
+      margin: 24px 0;
+      overflow-x: auto;
+      text-align: center;
+    }
+
+    /* ── Info callout ──────────────────────── */
+    .callout {
+      border-left: 3px solid var(--border);
+      padding: 14px 18px;
+      background: var(--bg-soft);
+      border-radius: 0 6px 6px 0;
+      margin: 20px 0;
+    }
+    .callout p {
+      font-size: 14.5px;
+      color: var(--text-mid);
+      line-height: 1.65;
+      margin: 0;
+    }
+    .callout p + p { margin-top: 8px; }
+
+    /* ── Space helpers ─────────────────────── */
+    .mt-sm { margin-top: 12px; }
+    .mt-md { margin-top: 20px; }
+
+    /* ── Footer ────────────────────────────── */
+    .doc-footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+    }
+    .doc-footer p {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── Responsive ────────────────────────── */
+    @media (max-width: 860px) {
+      .doc-layout { flex-direction: column; gap: 0; }
+      .toc-col {
+        position: static; width: 100%; max-height: none;
+        padding-top: 28px; padding-bottom: 20px;
+        border-bottom: 1px solid var(--border);
+      }
+      .doc-main { padding-top: 36px; }
+      .model-strip { flex-direction: column; border: none; gap: 10px; }
+      .model-item { border: 1px solid var(--border); border-right: 1px solid var(--border) !important; border-radius: 6px; }
+      .model-arrow-cell { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .page-wrap { padding: 0 20px; }
+      .doc-title  { font-size: 21px; }
+      .doc-subtitle { font-size: 14.5px; }
+      .doc-p, .doc-ul li, .doc-ol li { font-size: 15px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     HEADER
+══════════════════════════════════════ -->
+<header class="doc-header">
+  <div class="page-wrap">
+    <div class="doc-eyebrow">Internal documentation</div>
+    <h1 class="doc-title">Experiment Documentation</h1>
+    <p class="doc-subtitle">Voice interview layer for finance, built with ElevenLabs as input and Claude as analysis, with human review as final decision</p>
+    <div class="doc-meta">
+      <span><span class="meta-key">Project</span> &nbsp;Ella V1</span>
+      <span class="meta-sep">·</span>
+      <span><span class="meta-key">Team</span> &nbsp;Passage</span>
+      <span class="meta-sep">·</span>
+      <span><span class="meta-key">Status</span> &nbsp;<span class="badge">In progress</span></span>
+      <span class="meta-sep">·</span>
+      <span><span class="meta-key">Scope</span> &nbsp;Experiment</span>
+      <span class="meta-sep">·</span>
+      <span><span class="meta-key">Last updated</span> &nbsp;April 16, 2026</span>
+    </div>
+  </div>
+</header>
+
+<!-- ══════════════════════════════════════
+     BODY
+══════════════════════════════════════ -->
+<div class="page-wrap doc-layout">
+
+  <!-- TOC -->
+  <aside class="toc-col">
+    <div class="toc-heading">Contents</div>
+    <nav id="toc-nav">
+      <a href="#problem"        class="toc-link">1. Problem Statement</a>
+      <a href="#solution"       class="toc-link">2. Solution Statement</a>
+      <a href="#thinking"       class="toc-link">3. Product Thinking</a>
+      <a href="#scope"          class="toc-link">4. Current Scope</a>
+      <a href="#architecture"   class="toc-link">5. System Architecture</a>
+      <a href="#testing"        class="toc-link">6. What This Experiment Tests</a>
+      <a href="#logic"          class="toc-link">7. Current Interview Logic</a>
+      <a href="#learnings"      class="toc-link">8. Key Learnings</a>
+      <a href="#issues"         class="toc-link">9. Known Issues</a>
+      <a href="#benchmarking"   class="toc-link">10. Benchmarking Approach</a>
+      <a href="#bench-table"    class="toc-link">11. Benchmark Table</a>
+      <a href="#answers"        class="toc-link">12. Example Answer Set</a>
+      <a href="#claude"         class="toc-link">13. Downstream Claude Layer</a>
+      <a href="#why"            class="toc-link">14. Why This Approach Matters</a>
+      <a href="#next"           class="toc-link">15. Next Steps</a>
+    </nav>
+  </aside>
+
+  <!-- Main content -->
+  <main class="doc-main">
+
+    <!-- ── 1. Problem Statement ────────────── -->
+    <section class="doc-section" id="problem">
+      <div class="sec-header">
+        <span class="sec-num">01</span>
+        <h2>Problem Statement</h2>
+      </div>
+
+      <p class="doc-p">The current finance review process relies on three sources of input: structured questionnaires, uploaded documents, and a short human-led interview. Each has known weaknesses that compound across cases.</p>
+
+      <p class="doc-p">Questionnaires produce predictable, rehearsed answers. The same phrasing appears across applications because applicants understand what reviewers want to hear. Uploaded documents are frequently incomplete or missing entirely. When they are present, they show figures without context — no explanation of origin, no classification of debt, no clarity on whether collateral is a gift or a loan.</p>
+
+      <p class="doc-p">The interview, when it happens, is the most valuable input of the three. But its quality depends entirely on who is running it, how much time they have, and whether they ask the right follow-up questions. The result is inconsistency. One reviewer probes funding sources with precision; another accepts "my family will help" as a complete answer.</p>
+
+      <p class="doc-p">Reviewers frequently begin cases without the evidence they need. Monthly payment plans are stated without math. Motivation answers are generic. Work history details are listed without depth. Contradictions between what was written and what was said go unnoticed.</p>
+
+      <p class="doc-p">The goal of this experiment is not to automate the final decision. It is to improve the quality of inputs available to the reviewer before that decision is made. Better inputs lead to better decisions, more consistent approvals, and cases that can be audited and explained.</p>
+    </section>
+
+    <!-- ── 2. Solution Statement ───────────── -->
+    <section class="doc-section" id="solution">
+      <div class="sec-header">
+        <span class="sec-num">02</span>
+        <h2>Solution Statement</h2>
+      </div>
+
+      <p class="doc-p">The solution is a student-friendly voice interview layer that sits upstream of the review process.</p>
+
+      <p class="doc-p">ElevenLabs powers the voice interface. It speaks the questions, listens to the student's answers, and generates a transcript. That transcript is then passed to Claude or a backend processing layer, which structures the raw answers into reviewer-ready notes: Program Fit observations, Financial Resources observations, contradiction flags, and missing information markers.</p>
+
+      <p class="doc-p">The human reviewer reads the structured output alongside the raw transcript and makes the final decision.</p>
+
+      <div class="model-strip">
+        <div class="model-item">
+          <div class="model-name">ElevenLabs</div>
+          <div class="model-role">Mouth &amp; Ears</div>
+          <div class="model-desc">Voice layer only. Asks questions, captures answers, generates transcript. No analysis, no scoring, no decisions.</div>
+        </div>
+        <div class="model-arrow-cell">→</div>
+        <div class="model-item">
+          <div class="model-name">Claude / Backend</div>
+          <div class="model-role">Brain</div>
+          <div class="model-desc">Analysis layer. Reads the transcript, produces structured reviewer notes across all output categories.</div>
+        </div>
+        <div class="model-arrow-cell">→</div>
+        <div class="model-item">
+          <div class="model-name">Human Reviewer</div>
+          <div class="model-role">Final Judgment</div>
+          <div class="model-desc">Makes the final decision. Always in the loop. The system supports their judgment — it does not replace it.</div>
+        </div>
+      </div>
+
+      <p class="doc-p">This separation is intentional. No single layer is trying to do too much. Each does one thing well and passes the result to the next.</p>
+    </section>
+
+    <!-- ── 3. Product Thinking ─────────────── -->
+    <section class="doc-section" id="thinking">
+      <div class="sec-header">
+        <span class="sec-num">03</span>
+        <h2>Product Thinking</h2>
+      </div>
+
+      <p class="doc-p">The voice interview is designed around a set of principles that keep the experience useful, honest, and easy to maintain.</p>
+
+      <ul class="doc-ul">
+        <li><strong>One question at a time.</strong> Compound questions produce compound confusion. Each question is a single, clear ask. No multi-part prompts.</li>
+        <li><strong>Simple English.</strong> The interview is designed to be accessible to applicants at all language levels. Technical vocabulary is avoided unless essential to the question.</li>
+        <li><strong>Warm and approachable.</strong> The tone is conversational, not interrogative. The student should feel they are being listened to, not processed.</li>
+        <li><strong>At most one follow-up per topic.</strong> The agent can ask a single clarifying question if the first answer is vague. It does not loop or drill. One pass per topic.</li>
+        <li><strong>No fake automation theater.</strong> The student is not pretending to talk to a human and neither is the system. The experience is direct and honest.</li>
+        <li><strong>Same downstream outputs, better input layer.</strong> Nothing in the review workflow changes. The same output categories exist. The same human reviewer makes decisions. Only the quality of inputs improves.</li>
+        <li><strong>Human in the loop.</strong> At every stage — design, testing, review, and decision — there is a human involved. The system supports human judgment; it does not replace it.</li>
+      </ul>
+    </section>
+
+    <!-- ── 4. Current Scope ────────────────── -->
+    <section class="doc-section" id="scope">
+      <div class="sec-header">
+        <span class="sec-num">04</span>
+        <h2>Current Scope</h2>
+      </div>
+
+      <p class="doc-p">The current experiment is scoped to two fixed output categories:</p>
+
+      <ul class="doc-ul">
+        <li><strong>Program Fit</strong> — covering motivation, program understanding, past study relevance, and work relevance to the program field.</li>
+        <li><strong>Financial Resources</strong> — covering funding source and origin, existing debt and its nature, cash collateral classification (gift or loan with repayment terms), monthly payment capacity, income stability during study, and backup plan if primary income stops.</li>
+      </ul>
+
+      <p class="doc-p">These two were selected because they represent the areas where current input collection is most consistently weak, and where better evidence most directly affects reviewer confidence and decision quality.</p>
+
+      <p class="doc-p">The voice layer is designed to capture stronger, more specific evidence for these two outputs. It does not replace any existing step in the review process. Additional output categories may be added in future scope if this experiment succeeds.</p>
+    </section>
+
+    <!-- ── 5. Architecture ─────────────────── -->
+    <section class="doc-section" id="architecture">
+      <div class="sec-header">
+        <span class="sec-num">05</span>
+        <h2>System Architecture</h2>
+      </div>
+
+      <div class="mermaid-wrap">
+        <pre class="mermaid">
+flowchart TD
+
+A[Student opens interview link]
+B[ElevenLabs voice agent starts]
+C[Agent runs interview flow]
+D[ElevenLabs creates transcript]
+E{"How do we get transcript?"}
+F[Webhook sends transcript to backend]
+H[Backend stores transcript and metadata]
+I[Claude analysis layer processes transcript]
+J1[Program Fit notes]
+J2[Financial Resources notes]
+J3[Contradiction flags]
+J4[Missing information]
+K[Human reviewer opens case]
+L[Human makes final decision]
+
+A --> B --> C --> D --> E
+E --> F --> H
+
+H --> I
+I --> J1
+I --> J2
+I --> J3
+I --> J4
+J1 --> K
+J2 --> K
+J3 --> K
+J4 --> K
+K --> L
+        </pre>
+      </div>
+
+      <p class="doc-p">The flow begins when a student opens the interview link. ElevenLabs starts the voice agent and runs the interview from start to finish. When the interview ends, ElevenLabs generates a transcript and sends it via webhook to the backend. The backend stores the transcript alongside case metadata.</p>
+
+      <p class="doc-p">Claude then processes the stored transcript into four structured output types: Program Fit notes, Financial Resources notes, contradiction flags, and a list of missing or unanswered information. The human reviewer opens the case, reads the structured output alongside the raw transcript if needed, and makes the final approval decision.</p>
+
+      <p class="doc-p">The critical design choice in this architecture is where intelligence is applied. ElevenLabs is treated as a recording layer. Claude is the reasoning layer. The webhook is the connection between them. The reviewer is the decision layer. None of these steps overlaps with another.</p>
+    </section>
+
+    <!-- ── 6. What This Tests ──────────────── -->
+    <section class="doc-section" id="testing">
+      <div class="sec-header">
+        <span class="sec-num">06</span>
+        <h2>What This Experiment Tests</h2>
+      </div>
+
+      <p class="doc-p">This experiment tests one specific question: does a structured voice interview produce higher quality inputs for finance review than the current process?</p>
+
+      <p class="doc-p">Higher quality is defined precisely:</p>
+
+      <ul class="doc-ul">
+        <li>More specific answers — less vague, less rehearsed, harder to bluff</li>
+        <li>Better financial clarity — funding source classified, amounts stated, gift vs. loan confirmed</li>
+        <li>More consistent across cases — the same questions, the same structure, every time</li>
+        <li>Faster reviewer readiness — the structured output reduces the time a reviewer needs before making a confident decision</li>
+      </ul>
+
+      <p class="doc-p">The benchmark is not whether the AI sounds smart. It is not whether the conversation feels natural or whether the voice is pleasant. The benchmark is whether the resulting structured output gives the reviewer clearly better material than what they have today.</p>
+
+      <p class="doc-p">If a reviewer, looking at the structured Claude output from this interview, can make a more confident decision with less effort, the experiment has succeeded.</p>
+    </section>
+
+    <!-- ── 7. Interview Logic ───────────────── -->
+    <section class="doc-section" id="logic">
+      <div class="sec-header">
+        <span class="sec-num">07</span>
+        <h2>Current Interview Logic</h2>
+      </div>
+
+      <p class="doc-p">The interview is organized into three sequential parts. Each is focused on a specific type of evidence and feeds a specific downstream output category.</p>
+
+      <h3 class="doc-h3">Part 1 — Program Fit</h3>
+      <p class="doc-p">Covers the applicant's motivation for choosing the program, their understanding of what it involves, their past academic background and its relevance, and their work history and its connection to the field. The goal is to separate specific, verifiable knowledge from rehearsed, generic answers.</p>
+
+      <ul class="doc-ul">
+        <li>Genuine motivation — not polished but hollow</li>
+        <li>Specific program knowledge — named courses, named outcomes</li>
+        <li>Academic preparation — depth, not just field alignment</li>
+        <li>Professional relevance — actual tasks and outputs, not job titles</li>
+      </ul>
+
+      <h3 class="doc-h3">Part 2 — Consistency Check</h3>
+      <p class="doc-p">A small set of bridging questions that revisit key claims from Part 1 using different phrasing. This is not a second interview — it is a brief check designed to surface vague or contradictory answers before entering the financial section, while the context of Part 1 is still fresh.</p>
+
+      <ul class="doc-ul">
+        <li>Confirming stated career goals with specifics</li>
+        <li>Cross-checking time frames and claimed experience</li>
+        <li>Identifying inconsistencies before they carry into financial answers</li>
+      </ul>
+
+      <h3 class="doc-h3">Part 3 — Financial Resources</h3>
+      <p class="doc-p">Covers the applicant's funding source and origin, existing debt and its nature, classification of cash collateral as gift or loan (with repayment terms where applicable), monthly payment capacity, income stability during study, and backup plan if the primary income source stops.</p>
+
+      <ul class="doc-ul">
+        <li>Gift vs. loan — must be explicitly classified, not left open</li>
+        <li>Specific dollar amounts — not ranges, not approximations</li>
+        <li>Realistic monthly math — income, expenses, and buffer confirmed</li>
+        <li>Named backup plan — a real named fallback, not "I'll find something"</li>
+      </ul>
+    </section>
+
+    <!-- ── 8. Key Learnings ────────────────── -->
+    <section class="doc-section" id="learnings">
+      <div class="sec-header">
+        <span class="sec-num">08</span>
+        <h2>Key Learnings So Far</h2>
+      </div>
+
+      <ol class="doc-ol">
+        <li>
+          <strong>Overbuilding inside ElevenLabs was the wrong direction.</strong>
+          Early experiments tried to implement branching logic, dynamic follow-ups, and scoring directly inside the voice agent. This produced inconsistent behavior, was difficult to debug, and broke frequently under real conditions.
+        </li>
+        <li>
+          <strong>ElevenLabs should stay as the input layer only.</strong>
+          The voice agent speaks questions and captures answers. All routing, logic, and analysis happens after the transcript is produced. The moment you ask ElevenLabs to do reasoning, you lose reliability.
+        </li>
+        <li>
+          <strong>The real intelligence belongs after transcript creation.</strong>
+          The Claude or backend processing layer is where reasoning should happen. Transcript in, structured output out — this is the right architecture. Anything else creates fragile dependencies.
+        </li>
+        <li>
+          <strong>Long voice questions break easily.</strong>
+          Questions longer than two sentences become awkward when spoken aloud and harder for applicants to hold in mind. Short, direct questions produce cleaner, more useful answers.
+        </li>
+        <li>
+          <strong>Binary financial questions produce cleaner answers.</strong>
+          "Is this a gift or a loan?" returns a classifiable answer. "Can you describe your funding arrangement?" returns a paragraph that still needs to be parsed. Force the classification in the question.
+        </li>
+        <li>
+          <strong>A hard stop at the end of the interview matters.</strong>
+          Without a clean, definitive closing line, the agent behavior after the final question is unpredictable. The interview must end clearly. Any ambiguity at the close creates problems.
+        </li>
+        <li>
+          <strong>The opportunity is better evidence capture, not full automation.</strong>
+          This experiment is not about removing the human reviewer. It is about giving them better material before they open a case. The goal is consistency and completeness, not replacement.
+        </li>
+      </ol>
+    </section>
+
+    <!-- ── 9. Known Issues ─────────────────── -->
+    <section class="doc-section" id="issues">
+      <div class="sec-header">
+        <span class="sec-num">09</span>
+        <h2>Known Issues Observed in Early Tests</h2>
+      </div>
+
+      <ul class="doc-ul">
+        <li>Some questions still sound too interrogative when spoken aloud. Phrasing that reads cleanly on screen can feel like pressure when voiced by the agent.</li>
+        <li>Long questions occasionally trigger awkward repetition behavior in the voice layer. Questions with more than two clauses are consistently problematic.</li>
+        <li>Debt answers can remain fuzzy even when asked directly. The follow-up question on debt classification needs tighter phrasing — the current version still allows vague answers to pass.</li>
+        <li>Monthly payment plan answers are easy to bluff. Stating intent ("I'll work part-time") rather than named figures and confirmed arrangements is still being accepted without a follow-up challenge.</li>
+        <li>End behavior requires a hard, unambiguous closing line. Any softness in the closing — any phrasing that leaves the door open — causes the agent to attempt to continue after the final question.</li>
+      </ul>
+    </section>
+
+    <!-- ── 10. Benchmarking Approach ──────── -->
+    <section class="doc-section" id="benchmarking">
+      <div class="sec-header">
+        <span class="sec-num">10</span>
+        <h2>Benchmarking and Stress Test Approach</h2>
+      </div>
+
+      <p class="doc-p">The system will be stress tested using ten synthetic student personas, each representing a distinct answer profile. The purpose is to compare transcript quality and downstream Claude output quality across different combinations of program fit and financial strength.</p>
+
+      <p class="doc-p">Each test will produce a raw transcript, a Claude-structured output, and a qualitative assessment of reviewer readiness. Tests will be run in sequence and results compared across profiles.</p>
+
+      <p class="doc-p">Recurring failure modes in specific question types will be documented and used to refine the question set once before moving toward real applicant testing. The goal is to identify the minimum set of questions that reliably produces high-quality reviewer inputs across the widest range of applicant profiles — including the hardest ones.</p>
+    </section>
+
+    <!-- ── 11. Benchmark Table ────────────── -->
+    <section class="doc-section" id="bench-table">
+      <div class="sec-header">
+        <span class="sec-num">11</span>
+        <h2>Benchmark Table</h2>
+      </div>
+
+      <div class="doc-tbl-wrap">
+        <table class="doc-tbl">
+          <thead>
+            <tr>
+              <th style="width:52px">ID</th>
+              <th style="width:200px">Profile</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-mono">T01</td>
+              <td class="td-bold">Strong honest</td>
+              <td>Clear motivation, named program knowledge, confirmed finances with specific amounts and source classification</td>
+            </tr>
+            <tr>
+              <td class="td-mono">T02</td>
+              <td class="td-bold">Decent simple</td>
+              <td>Understandable but basic — honest answers without depth, no red flags but limited specificity</td>
+            </tr>
+            <tr>
+              <td class="td-mono">T03</td>
+              <td class="td-bold">Weak vague</td>
+              <td>Low signal throughout — missing detail, generic motivation, financial answers that cannot be classified</td>
+            </tr>
+            <tr>
+              <td class="td-mono">T04</td>
+              <td class="td-bold">Strong fit, weak finances</td>
+              <td>Good program fit with specific knowledge and motivation, but poor financial clarity — funding source unclassified, no backup plan</td>
+            </tr>
+            <tr>
+              <td class="td-mono">T05</td>
+              <td class="td-bold">Weak fit, strong finances</td>
+              <td>Opposite pattern — clear and complete financial picture but vague, rehearsed program fit answers with no real depth</td>
+            </tr>
+            <tr>
+              <td class="td-mono">T06</td>
+              <td class="td-bold">Contradictory</td>
+              <td>Intentionally inconsistent answers — stated career goal conflicts with stated work history, financial figures change between Part 1 and Part 3</td>
+            </tr>
+            <tr>
+              <td class="td-mono">T07</td>
+              <td class="td-bold">Low English, honest</td>
+              <td>Honest and genuine answers but expressed with low fluency — tests whether the system can extract signal from imperfect language</td>
+            </tr>
+            <tr>
+              <td class="td-mono">T08</td>
+              <td class="td-bold">Bluffing polished</td>
+              <td>Overconfident delivery, fluent and well-structured, but no real substance — tests whether specificity requirements catch hollow answers</td>
+            </tr>
+            <tr>
+              <td class="td-mono">T09</td>
+              <td class="td-bold">Realistic stressed</td>
+              <td>Honest but imperfect — nervous, sometimes contradicts themselves, real financial picture with gaps — represents a typical borderline case</td>
+            </tr>
+            <tr>
+              <td class="td-mono">T10</td>
+              <td class="td-bold">High risk, unclear finances</td>
+              <td>Missing financial clarity and backup plan — income unstable, collateral source vague, monthly math does not hold under questioning</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 12. Example Answer Set ─────────── -->
+    <section class="doc-section" id="answers">
+      <div class="sec-header">
+        <span class="sec-num">12</span>
+        <h2>Example Benchmark Answer Set</h2>
+      </div>
+
+      <p class="doc-p">The following table shows what a strong versus weak answer looks like for each core question. These examples are used to calibrate scoring and train reviewers on what the structured output should surface.</p>
+
+      <div class="doc-tbl-wrap">
+        <table class="doc-tbl">
+          <thead>
+            <tr>
+              <th style="width:160px">Question</th>
+              <th style="width:50%">Strong answer</th>
+              <th>Weak answer</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="td-bold">Why this program?</td>
+              <td>"I researched three programs and this one has a dedicated healthcare administration stream with a practicum in semester two. I spoke with a graduate through the open day and her path matched exactly what I'm targeting."</td>
+              <td class="td-dim">"I've always been interested in this area and I feel this program will help me develop professionally."</td>
+            </tr>
+            <tr>
+              <td class="td-bold">What will it teach you?</td>
+              <td>"The curriculum has three modules I need specifically: healthcare finance, policy, and operations management. I've downloaded the course guide and I'm targeting the finance modules in semester one — that's my current gap."</td>
+              <td class="td-dim">"It will teach me a lot of new things and help me develop skills in the healthcare sector."</td>
+            </tr>
+            <tr>
+              <td class="td-bold">Past study relevance</td>
+              <td>"My undergraduate was in business administration with a finance specialization. Three of my final year courses — financial analysis, organizational management, and a healthcare elective — directly cover what this program builds on."</td>
+              <td class="td-dim">"My background is in business, which I think is related. It's not exactly the same field but there is overlap."</td>
+            </tr>
+            <tr>
+              <td class="td-bold">Stress response</td>
+              <td>"In my last role, our billing system failed two days before month-end close. I built a manual reconciliation process, divided the work across four team members, and we closed on time with zero errors."</td>
+              <td class="td-dim">"I handle stress by staying focused and taking things one step at a time. I usually stay positive."</td>
+            </tr>
+            <tr>
+              <td class="td-bold">Career goal</td>
+              <td>"In five years I want to be a healthcare operations manager in a mid-size hospital network in Ontario. This program gives me the credential I need. I've already done informational interviews at one target organization."</td>
+              <td class="td-dim">"I want to advance in my career and eventually reach a leadership role where I can make a positive contribution."</td>
+            </tr>
+            <tr>
+              <td class="td-bold">Funding source</td>
+              <td>"I have $42,000 in a TD savings account in Canada. My parents are contributing $15,000 as a gift — confirmed, not a loan. Together that is $57,000, which covers tuition and 14 months of living costs at my projected budget."</td>
+              <td class="td-dim">"I have some savings and my family is going to help me. I think the total should be enough to cover my expenses."</td>
+            </tr>
+            <tr>
+              <td class="td-bold">Debt status</td>
+              <td>"No debt in Canada. Back home I have a car loan with $3,200 remaining at a fixed monthly payment of $180, paid by direct debit from my home account. It has zero impact on my Canadian budget."</td>
+              <td class="td-dim">"I don't really have any major debt. Nothing I think will be a problem while I'm studying."</td>
+            </tr>
+            <tr>
+              <td class="td-bold">Monthly payment plan</td>
+              <td>"Tuition is $2,100 per month. Living costs are $1,800. I have a confirmed part-time offer at $22 per hour, 20 hours per week, starting September. That's $1,760 monthly income. The remainder comes from savings, which covers the full 12 months independently."</td>
+              <td class="td-dim">"I plan to work part-time and use my savings to cover costs. I'm confident I'll be able to manage the monthly expenses."</td>
+            </tr>
+            <tr>
+              <td class="td-bold">Backup plan</td>
+              <td>"If my part-time income stops, my savings cover 12 months fully. Beyond that, my parents have committed to a further $10,000 interest-free loan. I also have a written return-employment offer from my previous employer if I ever need to pause."</td>
+              <td class="td-dim">"If things get difficult I'll find another job. Canada has a lot of opportunities and I'm not worried about it."</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── 13. Downstream Claude Layer ───── -->
+    <section class="doc-section" id="claude">
+      <div class="sec-header">
+        <span class="sec-num">13</span>
+        <h2>Downstream Claude Layer</h2>
+      </div>
+
+      <p class="doc-p">After the transcript is received by the backend, the Claude analysis layer processes it into a structured reviewer output. This is where the actual reasoning happens. The voice layer collects raw material; the Claude layer structures it; the reviewer reads the structure and makes a decision.</p>
+
+      <p class="doc-p">A representative output for a strong applicant looks like this:</p>
+
+      <div class="doc-code"><pre>
+<span class="ln-head">PROGRAM FIT</span>
+<span class="ln-rule">──────────────────────────────────────────────────</span>
+<span class="ln-key">Motivation quality:   </span><span class="ln-val">Clear and specific — not rehearsed</span>
+<span class="ln-key">Program knowledge:    </span><span class="ln-val">Named courses and stream, curriculum reviewed</span>
+<span class="ln-key">Academic relevance:   </span><span class="ln-val">Strong — direct overlap confirmed, 3 courses named</span>
+<span class="ln-key">Work relevance:       </span><span class="ln-val">Moderate — adjacent field, partial overlap</span>
+<span class="ln-key">Reviewer note:        </span><span class="ln-val">Applicant demonstrated specific program knowledge
+                      and a named career target. Motivation does not
+                      appear rehearsed. Recommended for standard review.</span>
+
+<span class="ln-head">FINANCIAL RESOURCES</span>
+<span class="ln-rule">──────────────────────────────────────────────────</span>
+<span class="ln-key">Funding source:       </span><span class="ln-val">Confirmed — savings ($42,000) + parental gift ($15,000)</span>
+<span class="ln-key">Collateral type:      </span><span class="ln-val">Gift — confirmed explicitly, not a loan</span>
+<span class="ln-key">Total available:      </span><span class="ln-val">$57,000 CAD</span>
+<span class="ln-key">Debt level:           </span><span class="ln-val">Low — $3,200 home-country car loan, no Canadian debt</span>
+<span class="ln-key">Monthly payment plan: </span><span class="ln-val">Realistic — 12-month buffer confirmed, part-time
+                      offer named at $22/hr, 20 hrs/week from September</span>
+<span class="ln-key">Backup plan:          </span><span class="ln-val">Specific — parental loan ($10,000) + return employer offer</span>
+<span class="ln-key">Reviewer note:        </span><span class="ln-val">Financial picture is unusually complete. Specific
+                      amounts stated, gift confirmed, backup plan has
+                      two named fallbacks. High confidence on FR scoring.</span>
+
+<span class="ln-head">FLAGS</span>
+<span class="ln-rule">──────────────────────────────────────────────────</span>
+<span class="ln-flag">Contradictions:       </span><span class="ln-val">None detected</span>
+<span class="ln-flag">Missing information:  </span><span class="ln-val">None</span>
+
+<span class="ln-head">REVIEWER SUMMARY</span>
+<span class="ln-rule">──────────────────────────────────────────────────</span>
+<span class="ln-val">Strong application on both Program Fit and Financial Resources.
+Motivation is specific and verifiable. Financial picture is
+complete and conservative. Recommend proceeding to document
+review with high confidence.</span>
+      </pre></div>
+
+      <p class="doc-p">The same structure is produced for every case. Reviewers do not need to parse a transcript or reconstruct context from notes. The output is ready to act on.</p>
+    </section>
+
+    <!-- ── 14. Why This Approach Matters ──── -->
+    <section class="doc-section" id="why">
+      <div class="sec-header">
+        <span class="sec-num">14</span>
+        <h2>Why This Approach Matters</h2>
+      </div>
+
+      <p class="doc-p">This experiment does not try to replace human reviewers. The decision remains with the reviewer, always.</p>
+
+      <p class="doc-p">The experiment addresses a specific and tractable problem: reviewers are being asked to make important decisions with incomplete, inconsistent, and hard-to-audit inputs. That is not a reviewer failure. It is a system design failure. The inputs are weak because the collection process is weak.</p>
+
+      <p class="doc-p">Better inputs lead to better decisions, faster reviews, and a record of what was collected and when. Cases become easier to defend, explain, and learn from. Consistency across reviewers improves because the input layer is standardized rather than dependent on individual interview style or available time.</p>
+
+      <p class="doc-p">The ambition here is not artificial intelligence replacing judgment. It is systematic evidence collection making judgment easier, more consistent, and better. A reviewer who can make a confident decision in less time, with less uncertainty, is a better outcome for everyone — including the applicant.</p>
+    </section>
+
+    <!-- ── 15. Next Steps ─────────────────── -->
+    <section class="doc-section" id="next">
+      <div class="sec-header">
+        <span class="sec-num">15</span>
+        <h2>Next Steps</h2>
+      </div>
+
+      <ol class="doc-ol">
+        <li><strong>Run 10 structured interview tests</strong> using synthetic personas T01 through T10 in sequence.</li>
+        <li><strong>Collect all 10 transcripts</strong> and pass each through the Claude analysis layer to generate structured outputs.</li>
+        <li><strong>Compare outputs across profiles</strong> — identify recurring failure modes in specific question types, especially in financial classification and backup plan questions.</li>
+        <li><strong>Document weak spots</strong> — record the exact questions and answer patterns that produce vague, unclassifiable, or missing outputs.</li>
+        <li><strong>Refine the question set once</strong> based on observed evidence, not assumptions. One targeted revision, not a redesign.</li>
+        <li><strong>Validate the refined version</strong> with 3–5 additional test runs covering the highest-risk profiles.</li>
+        <li><strong>Define transcript quality success criteria</strong> before moving to any real applicant testing. The threshold must be written down and agreed on.</li>
+        <li><strong>Move toward backend automation</strong> of the transcript processing step once transcript quality is proven stable and consistent across profiles.</li>
+      </ol>
+    </section>
+
+  </main>
+</div>
+
+<!-- FOOTER -->
+<footer class="doc-footer">
+  <div class="page-wrap">
+    <p>Experiment documentation for Ella V1, Passage</p>
+  </div>
+</footer>
+
+<!-- Mermaid -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'default',
+    securityLevel: 'loose',
+    flowchart: { curve: 'basis', htmlLabels: true }
+  });
+</script>
+
+<!-- TOC scroll spy -->
+<script>
+  (function () {
+    const links = document.querySelectorAll('#toc-nav .toc-link');
+    const sections = Array.from(document.querySelectorAll('.doc-section'));
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            links.forEach((l) => l.classList.remove('active'));
+            const active = document.querySelector(
+              `#toc-nav a[href="#${entry.target.id}"]`
+            );
+            if (active) active.classList.add('active');
+          }
+        });
+      },
+      { rootMargin: '-40px 0px -65% 0px', threshold: 0 }
+    );
+
+    sections.forEach((s) => obs.observe(s));
+  })();
+</script>
+
+</body>
+</html>
